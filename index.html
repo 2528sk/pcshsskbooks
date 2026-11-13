@@ -1093,7 +1093,7 @@ en: {
   poster:'Poster', you:'You', someone:'Someone', delete_q:'Delete?',
   q_avail:'Is it still available?', q_meet:'Where can we meet at school?', q_price:'Could you lower the price a bit?', q_swap:'I could swap you: ', q_give:'Could I have it?', qp_here:'Still available!', qp_meet:'We can meet at school.',
   interest_added:'Marked as interested. The poster sees you in the queue.', new_n:'{n} new', n_interested:'{n} interested', n_msgs:'{n} messages',
-  act_title:'Updates:', acct_login:'Admin', acct_title:'Admin login', acct_user_lbl:'Username', acct_pass_lbl:'Password', acct_btn:'Log in', acct_signed:'Logged in as {name}.', acct_admin:'Admin: you can post, edit and delete books and edit the shop.', acct_notadmin:'This account isn’t an admin yet. Add its user ID to the admins list in Firebase.', acct_id:'User ID', acct_copy:'Copy ID', acct_copied:'User ID copied.', acct_signout:'Log out', acct_err:'Login didn’t work. Please try again.', acct_err_bad:'Wrong username or password.', acct_err_many:'Too many tries. Wait a few minutes and try again.', acct_err_off:'Password login isn’t turned on in Firebase yet.', acct_admin_short:'Admin', nodel:'', act_msgs:'{n} new messages', act_int:'{n} interested', act_more:'+{n} more', act_avail:'available again',
+  act_title:'Updates:', acct_login:'Admin', acct_title:'Admin login', acct_user_lbl:'Username', acct_pass_lbl:'Password', acct_btn:'Log in', acct_signed:'Logged in as {name}.', acct_admin:'Admin: you can delete any listing and edit the shop.', acct_notadmin:'This account isn’t an admin yet. Add its user ID to the admins list in Firebase.', acct_id:'User ID', acct_copy:'Copy ID', acct_copied:'User ID copied.', acct_signout:'Log out', acct_err:'Login didn’t work. Please try again.', acct_err_bad:'Wrong username or password.', acct_err_many:'Too many tries. Wait a few minutes and try again.', acct_err_off:'Password login isn’t turned on in Firebase yet.', acct_admin_short:'Admin', nodel:'Only the site admin can delete listings. Mark it as taken instead.', act_msgs:'{n} new messages', act_int:'{n} interested', act_more:'+{n} more', act_avail:'available again',
   av_confirm:'✓ Still available', av_confirmed_today:'✓ Confirmed today', av_reserve:'Reserved', av_lent:'Lent out', av_back:'↺ Available again', av_confirm_btn:'Confirm still available',
   conf_fresh:'✓ Confirmed available {ago}', conf_stale:'Not confirmed for {n} days', f_confirmed:'Last confirmed', chip_avail:'Available again',
   toast_avail_back:'“{title}” is available again', toast_marked_avail:'Marked available. Students who pressed ♥ ({n}) will get an alert.', toast_confirmed:'Thanks! Marked as still available.', av_hint:'Your book, one click:',
@@ -1108,13 +1108,13 @@ en: {
   err_noperm:'You don’t have permission to do that.',
   err_quota:'The shelf is full. Ask the page owner to remove old listings.', err_busy:'Too many changes at once. Wait a few seconds and try again.', err_generic:'Couldn’t save. Check your connection and try again.',
   n_off:'Listings can’t load right now. Check your internet connection and refresh the page.', n_setup:'The database isn’t connected yet. The site owner needs to add the Firebase settings to this page.',
-  n_ro:'Browse books, press ♥ and chat with sellers. Books are posted by the site admin.',
+  n_ro:'You can browse books, but posting isn’t available right now. Refresh the page to try again.',
   n_ro_admin:'Want to list a book? DM {ig} on Instagram and they’ll post it for you.',
   n_slow:'Can’t reach the listings yet. They’ll appear when the connection is back.',
   n_err:'Listings stopped updating. Reload the page to see the latest.',
-  owner_tip:'You’re logged in as admin. Only admins can post, edit and delete books; students can browse, press ♥ and chat. Add your Instagram in Page settings so students can ask you to list their books.',
+  owner_tip:'You’re signed in as admin. Anyone can post and edit their own books; only admins can delete listings. Add your Instagram in Page settings so students can contact you.',
   dismiss:'Got it', posted:'Your book is on the shelf.', saved:'Changes saved.', deleted:'Listing deleted.', status_set:'Status updated.', loading:'Still loading the shelf. Try again in a moment.', settings_saved:'Settings saved.',
-  admin_ig:'Admin Instagram', admin_hint:'Shown on the site so students can ask you to list their books.', just_now:'just now'
+  admin_ig:'Admin Instagram', admin_hint:'Shown on the site so students can contact you about listings.', just_now:'just now'
 },
 th: {
   eyebrow:'โดยนักเรียน เพื่อนักเรียน',
@@ -1174,7 +1174,7 @@ th: {
   poster:'ผู้ลงประกาศ', you:'คุณ', someone:'ผู้ใช้', delete_q:'ลบเลย?',
   q_avail:'ยังมีอยู่ไหม?', q_meet:'นัดรับที่ไหนในโรงเรียนได้บ้าง?', q_price:'ลดราคาได้ไหม?', q_swap:'เรามีเล่มนี้มาแลก: ', q_give:'ขอรับต่อได้ไหม?', qp_here:'ยังอยู่นะ', qp_meet:'นัดรับที่โรงเรียนได้เลย',
   interest_added:'กดสนใจแล้ว คนลงประกาศจะเห็นชื่อคุณในคิว', new_n:'ใหม่ {n}', n_interested:'สนใจ {n} คน', n_msgs:'{n} ข้อความ',
-  act_title:'มีความเคลื่อนไหวใหม่:', acct_login:'แอดมิน', acct_title:'เข้าสู่ระบบแอดมิน', acct_user_lbl:'ชื่อผู้ใช้', acct_pass_lbl:'รหัสผ่าน', acct_btn:'เข้าสู่ระบบ', acct_signed:'เข้าสู่ระบบเป็น {name}', acct_admin:'แอดมิน: ลงประกาศ แก้ไข ลบหนังสือ และแก้ไขร้านค้าได้', acct_notadmin:'บัญชีนี้ยังไม่ได้เป็นแอดมิน ให้เพิ่ม User ID ในรายชื่อ admins ใน Firebase', acct_id:'User ID', acct_copy:'คัดลอก ID', acct_copied:'คัดลอก User ID แล้ว', acct_signout:'ออกจากระบบ', acct_err:'เข้าสู่ระบบไม่สำเร็จ ลองอีกครั้ง', acct_err_bad:'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', acct_err_many:'ลองหลายครั้งเกินไป รอสักครู่แล้วลองใหม่', acct_err_off:'ยังไม่ได้เปิดการเข้าสู่ระบบด้วยรหัสผ่านใน Firebase', acct_admin_short:'แอดมิน', nodel:'', act_msgs:'ข้อความใหม่ {n}', act_int:'คนสนใจ {n}', act_more:'อีก {n} เล่ม', act_avail:'กลับมาว่างแล้ว',
+  act_title:'มีความเคลื่อนไหวใหม่:', acct_login:'แอดมิน', acct_title:'เข้าสู่ระบบแอดมิน', acct_user_lbl:'ชื่อผู้ใช้', acct_pass_lbl:'รหัสผ่าน', acct_btn:'เข้าสู่ระบบ', acct_signed:'เข้าสู่ระบบเป็น {name}', acct_admin:'แอดมิน: ลบประกาศใดก็ได้และแก้ไขร้านค้าได้', acct_notadmin:'บัญชีนี้ยังไม่ได้เป็นแอดมิน ให้เพิ่ม User ID ในรายชื่อ admins ใน Firebase', acct_id:'User ID', acct_copy:'คัดลอก ID', acct_copied:'คัดลอก User ID แล้ว', acct_signout:'ออกจากระบบ', acct_err:'เข้าสู่ระบบไม่สำเร็จ ลองอีกครั้ง', acct_err_bad:'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', acct_err_many:'ลองหลายครั้งเกินไป รอสักครู่แล้วลองใหม่', acct_err_off:'ยังไม่ได้เปิดการเข้าสู่ระบบด้วยรหัสผ่านใน Firebase', acct_admin_short:'แอดมิน', nodel:'ลบประกาศได้เฉพาะแอดมินของเว็บ ให้ตั้งเป็น "มีเจ้าของแล้ว" แทน', act_msgs:'ข้อความใหม่ {n}', act_int:'คนสนใจ {n}', act_more:'อีก {n} เล่ม', act_avail:'กลับมาว่างแล้ว',
   av_confirm:'✓ ยังอยู่', av_confirmed_today:'✓ ยืนยันแล้ววันนี้', av_reserve:'ติดจอง', av_lent:'ให้ยืมแล้ว', av_back:'↺ กลับมาว่าง', av_confirm_btn:'ยืนยันว่ายังอยู่',
   conf_fresh:'✓ ยืนยันว่ายังอยู่ {ago}', conf_stale:'ไม่ได้ยืนยันมา {n} วัน', f_confirmed:'ยืนยันล่าสุด', chip_avail:'ว่างแล้ว!',
   toast_avail_back:'“{title}” กลับมาว่างแล้ว', toast_marked_avail:'ตั้งเป็นว่างแล้ว คนที่สนใจ {n} คนจะเห็นแจ้งเตือน', toast_confirmed:'ยืนยันแล้วว่าหนังสือยังอยู่', av_hint:'หนังสือของคุณ กดครั้งเดียว:',
@@ -1189,13 +1189,13 @@ th: {
   err_noperm:'คุณไม่มีสิทธิ์ทำรายการนี้',
   err_quota:'พื้นที่เต็มแล้ว ขอให้เจ้าของหน้าลบประกาศเก่าออกก่อน', err_busy:'บันทึกถี่เกินไป รอสักครู่แล้วลองใหม่', err_generic:'บันทึกไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่',
   n_off:'โหลดรายการหนังสือไม่ได้ในตอนนี้ ตรวจสอบอินเทอร์เน็ตแล้วรีเฟรชหน้า', n_setup:'ยังไม่ได้เชื่อมต่อฐานข้อมูล เจ้าของเว็บต้องใส่ค่า Firebase ในหน้านี้ก่อน',
-  n_ro:'ดูหนังสือ กด ♥ และแชทกับผู้ขายได้ หนังสือลงประกาศโดยแอดมินของเว็บ',
+  n_ro:'คุณดูหนังสือได้ แต่ตอนนี้ยังลงประกาศไม่ได้ ลองรีเฟรชหน้าอีกครั้ง',
   n_ro_admin:'อยากลงขายหรือแลกหนังสือ? ทักไอจี {ig} แล้วแอดมินจะลงให้',
   n_slow:'ยังโหลดรายการไม่ได้ จะแสดงเมื่อเชื่อมต่อได้',
   n_err:'รายการหยุดอัปเดต โหลดหน้าใหม่เพื่อดูล่าสุด',
-  owner_tip:'คุณเข้าสู่ระบบเป็นแอดมิน ลงประกาศ แก้ไข และลบหนังสือได้เฉพาะแอดมิน นักเรียนดูหนังสือ กด ♥ และแชทได้ ใส่ไอจีของคุณในตั้งค่าหน้าเพื่อให้นักเรียนทักมาให้ช่วยลงประกาศ',
+  owner_tip:'คุณเข้าสู่ระบบเป็นแอดมิน ทุกคนลงประกาศและแก้ไขหนังสือของตัวเองได้ แต่ลบประกาศได้เฉพาะแอดมิน ใส่ไอจีของคุณในตั้งค่าหน้าเพื่อให้นักเรียนติดต่อได้',
   dismiss:'รับทราบ', posted:'ลงประกาศแล้ว', saved:'บันทึกแล้ว', deleted:'ลบประกาศแล้ว', status_set:'อัปเดตสถานะแล้ว', loading:'กำลังโหลด ลองใหม่อีกครั้ง', settings_saved:'บันทึกการตั้งค่าแล้ว',
-  admin_ig:'ไอจีแอดมิน', admin_hint:'แสดงบนเว็บเพื่อให้นักเรียนทักมาให้คุณช่วยลงประกาศ', just_now:'เมื่อสักครู่'
+  admin_ig:'ไอจีแอดมิน', admin_hint:'แสดงบนเว็บเพื่อให้นักเรียนติดต่อคุณเรื่องประกาศได้', just_now:'เมื่อสักครู่'
 }};
 
 /* ---------- helpers ---------- */
@@ -1304,8 +1304,7 @@ function clean(id, d, ownerId, legacy){
   };
 }
 const writeAllowed = () => !!db && !!S.me && !S.readOnly && S.canWrite !== false;
-const canManage = b => !!b && !b.legacy && !!b.ownerId && writeAllowed() && S.isOwner;
-const postAllowed = () => writeAllowed() && S.isOwner;
+const canManage = b => !!b && !b.legacy && !!b.ownerId && writeAllowed() && ((S.me && b.ownerId === S.me) || S.isOwner);
 
 /* ---------- rendering ---------- */
 function fillSelect(sel, opts, value){
@@ -1520,7 +1519,7 @@ function renderBookBanner(){
   const covSig = list => list.map(b => b.id + (coverSrc(b) ? '+' : '-')).join(',');
   const newest = live.slice().sort((a, b) => b.createdAt - a.createdAt).slice(0, 4);
   newest.forEach(needCover);
-  const canPost = postAllowed();
+  const canPost = writeAllowed();
   const slides = [{
     tag: 'h1', id: 'headline', html: t('headline'), eyebrow: t('eyebrow'), sub: t('lede'),
     ctas: [canPost ? { label: t('post'), act: 'post', primary: true } : null, { label: t('bn_browse'), act: 'browse', primary: !canPost }].filter(Boolean),
@@ -1829,7 +1828,7 @@ function confEl(b){
   return null;
 }
 function availEl(b){
-  if (!postAllowed()) return null;
+  if (!S.me || b.ownerId !== S.me || !writeAllowed()) return null;
   const btns = [];
   if (b.status === 'available') {
     const today = b.confirmedAt && Date.now() - b.confirmedAt < DAY;
@@ -1921,9 +1920,9 @@ function renderShelf(){
   $('#resultCount').textContent = n === 0 ? t('count0') : n === 1 ? t('count1') : t('count', { n });
   if (S.books.length === 0) {
     const box = el('div', { class: 'empty' });
-    const txt = el('div', null, [el('h3', null, t('empty_t')), el('p', null, postAllowed() ? t('empty_d') : (S.dbState === 'off' ? t('n_off') : t('empty_ro')))]);
+    const txt = el('div', null, [el('h3', null, t('empty_t')), el('p', null, writeAllowed() ? t('empty_d') : (S.dbState === 'off' ? t('n_off') : t('empty_ro')))]);
     box.append(txt);
-    if (postAllowed()) { const b = el('button', { type: 'button', class: 'btn btn-dark' }, t('post')); b.addEventListener('click', () => openForm(null)); box.append(b); }
+    if (writeAllowed()) { const b = el('button', { type: 'button', class: 'btn btn-dark' }, t('post')); b.addEventListener('click', () => openForm(null)); box.append(b); }
     shelf.append(box, el('p', { class: 'examples-label' }, t('examples')), ...exampleCards());
     return;
   }
@@ -1945,7 +1944,7 @@ function renderNotice(){
   if (S.dbState === 'off') { p.textContent = t(window.PCSHSSK_FB_STATE === 'setup' ? 'n_setup' : 'n_off'); box.classList.add('warn'); }
   else if (S.dbError) { p.textContent = t('n_err'); box.classList.add('warn'); }
   else if (S.slow) { p.textContent = t('n_slow'); box.classList.add('warn'); }
-  else if (S.dbState === 'ready' && !postAllowed()) {
+  else if (S.dbState === 'ready' && !writeAllowed()) {
     if (S.adminIg) {
       const [a, b] = t('n_ro_admin').split('{ig}');
       p.append(a, el('a', { href: 'https://ig.me/m/' + S.adminIg, target: '_blank', rel: 'noopener noreferrer' }, '@' + S.adminIg), b || '');
@@ -2354,7 +2353,7 @@ function updateTypeFields(){
 }
 function openForm(b){
   if (!db) { toast(t('loading')); return; }
-  if (!postAllowed()) { toast(t('err_noperm')); return; }
+  if (!writeAllowed()) { toast(t('err_noperm')); return; }
   S.editing = b ? b.id : null;
   S.cover = b ? coverSrc(b) : '';
   S.coverChanged = false;
