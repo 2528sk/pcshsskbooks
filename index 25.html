@@ -1,0 +1,2944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PCSHSSK Book Exchange/Borrow/Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: graph-paper page; highlighter headline + library-card "how it works"; filter row; cover-first shelf grid; dialogs become bottom sheets on phones */
+  --paper:#F5F7F2;
+  --grid:rgba(37,84,190,.07);
+  --grid-strong:rgba(37,84,190,.13);
+  --ink:#15213B;
+  --ink-soft:#56607A;
+  --card:#FFFFFF;
+  --field:#FAFBF8;
+  --line:#D6DCE6;
+  --hi:#FFDE3B;
+  --on-hi:#15213B;
+  --press:#15213B;
+  --sell:#C2304F;
+  --swap:#0B7A6E;
+  --give:#6A3DC0;
+  --lend:#B85A00;
+  --bn:#14203A;
+  --studio-a:#FBFBFA;
+  --studio-b:#E3E4E2;
+  --focus:#2554BE;
+  --warn:#B57A06;
+  --shadow:0 1px 0 rgba(21,33,59,.06), 0 10px 24px -14px rgba(21,33,59,.35);
+  --f-display:"Chakra Petch", "Sarabun", system-ui, sans-serif;
+  --f-body:"Sarabun", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1422; --grid:rgba(140,170,255,.055); --grid-strong:rgba(140,170,255,.1);
+    --ink:#E8ECF6; --ink-soft:#9DA8C4; --card:#172033; --field:#111A2C; --line:#2A3651;
+    --hi:#F7D93A; --on-hi:#15213B; --press:#000000; --sell:#FF8AA3; --swap:#4CD2C0; --give:#B89CFF; --lend:#FFAA5C; --bn:#1D2C52; --studio-a:#2C3754; --studio-b:#151C2E; --focus:#93B4FF; --warn:#F2B84B;
+    --shadow:0 1px 0 rgba(0,0,0,.35), 0 12px 28px -14px rgba(0,0,0,.8);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1422; --grid:rgba(140,170,255,.055); --grid-strong:rgba(140,170,255,.1);
+  --ink:#E8ECF6; --ink-soft:#9DA8C4; --card:#172033; --field:#111A2C; --line:#2A3651;
+  --hi:#F7D93A; --on-hi:#15213B; --press:#000000; --sell:#FF8AA3; --swap:#4CD2C0; --give:#B89CFF; --lend:#FFAA5C; --bn:#1D2C52; --studio-a:#2C3754; --studio-b:#151C2E; --focus:#93B4FF; --warn:#F2B84B;
+  --shadow:0 1px 0 rgba(0,0,0,.35), 0 12px 28px -14px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html:has(dialog[open]){overflow:hidden}
+body{
+  margin:0; min-height:100%;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid-strong) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-strong) 1px, transparent 1px),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:120px 120px,120px 120px,24px 24px,24px 24px;
+  color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.5;
+}
+html[lang="th"] body{line-height:1.65}
+img{max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--focus)}
+:focus-visible{outline:3px solid var(--focus); outline-offset:2px; border-radius:6px}
+.vh{position:absolute!important; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+.wrap{max-width:1180px; margin:0 auto; padding:0 24px}
+[hidden]{display:none!important}
+
+/* top bar */
+.top{display:flex; align-items:center; justify-content:space-between; gap:12px; padding-top:18px; padding-bottom:6px}
+.brand{display:flex; align-items:center; gap:10px; font-family:var(--f-mono); font-weight:600; font-size:14px; letter-spacing:.06em}
+.brand svg{flex:none}
+.lang{display:flex; border:1.5px solid var(--line); border-radius:999px; padding:3px; background:var(--card)}
+.lang button{border:0; background:transparent; padding:5px 12px; border-radius:999px; font-size:14px; font-weight:600}
+.lang button[aria-pressed="true"]{background:var(--ink); color:var(--card)}
+
+/* hero */
+.hero{display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,.9fr); gap:48px; align-items:end; padding-top:36px; padding-bottom:30px}
+.eyebrow{margin:0 0 14px; font-family:var(--f-mono); font-size:13px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft)}
+h1{font-family:var(--f-display); font-weight:700; font-size:clamp(2.1rem, 3.4vw + 1rem, 4.1rem); line-height:1.06; letter-spacing:.005em; margin:0; text-wrap:balance; overflow-wrap:anywhere}
+h1 mark{
+  color:var(--on-hi); padding:0 .12em; margin:0 -.04em; border-radius:.12em;
+  background:linear-gradient(transparent 10%, var(--hi) 10%, var(--hi) 90%, transparent 90%) no-repeat 0 0 / 100% 100%;
+  -webkit-box-decoration-break:clone; box-decoration-break:clone;
+  animation:swipe .7s .2s cubic-bezier(.2,.7,.2,1) both;
+}
+@keyframes swipe{from{background-size:0% 100%}to{background-size:100% 100%}}
+.lede{max-width:56ch; font-size:18px; color:var(--ink-soft); margin:18px 0 0}
+.hero-actions{display:flex; flex-wrap:wrap; align-items:center; gap:18px 28px; margin-top:26px}
+.btn-post{
+  display:inline-flex; align-items:center; gap:10px; border:2px solid var(--on-hi); background:var(--hi); color:var(--on-hi);
+  font-family:var(--f-display); font-weight:700; font-size:17px; padding:12px 20px; border-radius:12px;
+  box-shadow:4px 4px 0 var(--press); transition:transform .12s, box-shadow .12s;
+}
+.btn-post:hover{transform:translate(-1px,-1px); box-shadow:5px 5px 0 var(--press)}
+.btn-post:active{transform:translate(3px,3px); box-shadow:1px 1px 0 var(--press)}
+.btn-post:disabled{opacity:.55; cursor:progress}
+.stats{display:flex; flex-wrap:wrap; gap:10px 22px; margin:0}
+.stat{display:flex; flex-direction:column; margin:0; line-height:1.1}
+.stat b{font-family:var(--f-mono); font-weight:600; font-size:26px; font-variant-numeric:tabular-nums}
+.stat span{font-size:13px; color:var(--ink-soft)}
+
+.card-steps{
+  background:var(--card); border:1px solid var(--line); border-radius:6px; box-shadow:var(--shadow);
+  padding:18px 22px 10px; transform:rotate(1.2deg); position:relative;
+}
+.card-steps::before{content:""; position:absolute; top:-9px; left:50%; width:84px; height:18px; transform:translateX(-50%) rotate(-2deg); background:color-mix(in srgb, var(--hi) 70%, transparent); opacity:.85}
+.card-steps h2{margin:0 0 4px; padding-bottom:10px; border-bottom:2px solid var(--sell); color:var(--sell); font-family:var(--f-mono); font-size:13px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; display:flex; justify-content:space-between}
+.card-steps ol{list-style:none; margin:0; padding:0}
+.card-steps li{display:grid; grid-template-columns:34px 1fr; gap:6px; padding:10px 0; border-bottom:1px dashed var(--line); align-items:baseline}
+.card-steps li:last-child{border-bottom:0}
+.card-steps li b{font-family:var(--f-mono); color:var(--ink-soft); font-size:14px}
+.card-steps li span{font-weight:600}
+.card-steps li small{display:block; font-weight:400; color:var(--ink-soft); font-size:14px}
+
+/* notice */
+.notice{display:flex; gap:12px; align-items:flex-start; background:var(--card); border:1.5px solid var(--line); border-left:5px solid var(--focus); border-radius:10px; padding:12px 14px; margin-bottom:18px; font-size:15px}
+.notice.warn{border-left-color:var(--warn)}
+.notice p{margin:0; flex:1}
+.notice button{border:0; background:transparent; color:var(--ink-soft); font-size:14px; text-decoration:underline; padding:2px 4px}
+
+/* toolbar */
+.toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:14px 0; border-top:2px solid var(--ink)}
+.search{position:relative; flex:1 1 280px; min-width:0}
+.search svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--ink-soft); pointer-events:none}
+.search input{width:100%; padding:11px 12px 11px 38px; border:1.5px solid var(--line); border-radius:10px; background:var(--card); font-size:16px}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{border:1.5px solid var(--line); background:var(--card); padding:8px 14px; border-radius:999px; font-weight:600; font-size:15px; white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ink); border-color:var(--ink); color:var(--card)}
+.sel{appearance:none; -webkit-appearance:none; border:1.5px solid var(--line); background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2378829b' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 12px center; padding:8px 34px 8px 12px; border-radius:10px; font-size:15px; max-width:100%}
+.toggle{display:inline-flex; align-items:center; gap:7px; font-size:15px; padding:6px 4px; white-space:nowrap; cursor:pointer}
+.toggle input{width:18px; height:18px; accent-color:var(--ink)}
+.resultline{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4px 16px; font-size:14px; color:var(--ink-soft); padding:0 0 18px}
+#resultCount{font-family:var(--f-mono)}
+.resultline .toggle{font-size:14.5px; color:var(--ink)}
+.linkbtn{border:0; background:transparent; color:var(--focus); text-decoration:underline; padding:2px; font-size:14px; font-family:var(--f-body)}
+
+/* shelf */
+.shelf{display:grid; grid-template-columns:repeat(auto-fill, minmax(172px, 1fr)); gap:30px 22px; padding-bottom:40px}
+.book{display:flex; flex-direction:column; gap:6px; text-decoration:none; color:inherit; min-width:0; border-radius:8px}
+.cover{position:relative; aspect-ratio:2/3; border-radius:3px 8px 8px 3px; overflow:hidden; background:var(--line); box-shadow:var(--shadow); transition:transform .18s ease, box-shadow .18s ease}
+.cover::after{content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(90deg, rgba(0,0,0,.22) 0, rgba(255,255,255,.16) 3px, rgba(0,0,0,.05) 7px, transparent 14px)}
+.cover img{display:block; width:100%; height:100%; object-fit:cover}
+.book-link{display:flex; flex-direction:column; gap:6px; text-decoration:none; color:inherit; min-width:0; border-radius:8px}
+ .book-link:hover .cover{transform:translateY(-4px) rotate(-.6deg); box-shadow:0 18px 30px -16px rgba(21,33,59,.55)}
+/* 3D book mockup on a studio backdrop */
+.cover.stage{aspect-ratio:4/5; border-radius:14px; overflow:hidden; box-shadow:none; border:1px solid var(--line);
+  background:radial-gradient(130% 85% at 50% 26%, var(--studio-a) 0%, var(--studio-b) 100%);
+  perspective:620px; perspective-origin:50% 58%; display:flex; align-items:flex-end; justify-content:center; padding-bottom:13%}
+.cover.stage::after{display:none}
+.book-link:hover .cover.stage{transform:none; box-shadow:none}
+.b3d{--th:11px; position:relative; width:58%; aspect-ratio:2/3; transform-style:preserve-3d; transform:rotateY(-25deg); transition:transform .4s cubic-bezier(.2,.7,.2,1); z-index:1}
+.book-link:hover .b3d{transform:rotateY(-32deg) translateY(-5px)}
+.b3d-front,.b3d-back{position:absolute; inset:0; border-radius:2px 5px 5px 2px; overflow:hidden}
+.b3d-front{transform:translateZ(calc(var(--th) / 2)); background:#d9d9d6}
+.b3d-front img{width:100%; height:100%; object-fit:cover; display:block}
+.b3d-front::after{content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(90deg, rgba(0,0,0,.2) 0, rgba(255,255,255,.24) 2.4%, rgba(0,0,0,.05) 5%, transparent 9%, transparent 82%, rgba(255,255,255,.12) 100%)}
+.b3d-back{transform:rotateY(180deg) translateZ(calc(var(--th) / 2)); background:#bfc0bc}
+.b3d-pages{position:absolute; top:1.4%; bottom:1.4%; left:calc(100% - var(--th) / 2); width:var(--th); transform:rotateY(90deg);
+  background:repeating-linear-gradient(90deg, rgba(0,0,0,.07) 0 1px, transparent 1px 2px), linear-gradient(90deg, #a9aaa6, #ecece6 28%, #f4f4ee 60%, #b3b4b0)}
+.b3d-shadow{position:absolute; left:50%; bottom:calc(13% - 9px); width:64%; height:18px; transform:translateX(-14%) skewX(-52deg); background:radial-gradient(ellipse at 22% 50%, rgba(0,0,0,.42), rgba(0,0,0,.16) 50%, transparent 76%); filter:blur(5px); pointer-events:none}
+.b3d-floor{position:absolute; left:18%; right:18%; bottom:calc(13% - 3px); height:6px; border-radius:50%; background:rgba(0,0,0,.28); filter:blur(4px); pointer-events:none}
+.book.is-done .b3d{opacity:.6}
+.d-cover .cover.stage{padding-bottom:12%; perspective:900px}
+.d-cover .b3d{--th:16px; width:60%}
+.skel .cover.stage .b3d{display:none}
+.book.is-done .cover img,.book.is-done .fake{filter:grayscale(1); opacity:.55}
+.stamp{position:absolute; top:10px; left:9px; z-index:2; font-family:var(--f-display); font-weight:700; font-size:13px; letter-spacing:.04em; text-transform:uppercase; padding:2px 8px; border:2px solid currentColor; border-radius:4px; background:var(--card); transform:rotate(-4deg); box-shadow:0 2px 6px rgba(0,0,0,.15); max-width:calc(100% - 18px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.stamp.sell,.stamp.both{color:var(--sell)}
+.stamp.swap{color:var(--swap)}
+.stamp.give{color:var(--give)}
+.stamp.lend{color:var(--lend)}
+.stamp.example{color:var(--ink-soft)}
+.ribbon{position:absolute; left:0; right:0; bottom:0; z-index:2; background:rgba(15,22,40,.86); color:#fff; text-align:center; font-family:var(--f-display); font-weight:600; font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; padding:6px 4px}
+.yours{position:absolute; top:10px; right:8px; z-index:2; background:var(--hi); color:var(--on-hi); font-size:12px; font-weight:700; padding:1px 7px; border-radius:999px}
+.b-title{margin:6px 0 0; font-size:16px; font-weight:600; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; overflow-wrap:anywhere}
+html[lang="th"] .b-title{line-height:1.45}
+.b-meta{margin:0; font-size:14px; color:var(--ink-soft)}
+.b-foot{margin:0; display:flex; flex-wrap:wrap; gap:4px 10px; align-items:center; font-size:13px; color:var(--ink-soft)}
+.b-ig{font-family:var(--f-mono); font-size:12.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%}
+.cond{display:inline-flex; align-items:center; gap:5px}
+.cond::before{content:""; width:8px; height:8px; border-radius:50%; background:var(--focus)}
+.cond.c-new::before{background:var(--swap)}
+.cond.c-fair::before{background:var(--warn)}
+.cond.c-worn::before{background:var(--sell)}
+
+.fake{position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-start; gap:8px; padding:30% 12% 12% 16%; color:#fff;
+  background:radial-gradient(120% 70% at 85% 8%, hsl(var(--h) 75% 66% / .55), transparent 60%), linear-gradient(165deg, hsl(var(--h) 50% 40%), hsl(var(--h) 56% 21%))}
+.fake::before{content:""; position:absolute; left:0; right:0; top:80%; height:5px; background:hsl(var(--h) 85% 78% / .75)}
+.fake-sub{font-family:var(--f-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; opacity:.85}
+.fake-title{font-family:var(--f-display); font-weight:700; font-size:clamp(15px, 1.5vw, 19px); line-height:1.2; overflow-wrap:anywhere; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden}
+
+.skel .cover{background:linear-gradient(100deg, var(--line) 30%, color-mix(in srgb, var(--line) 50%, var(--card)) 50%, var(--line) 70%) 0 0/300% 100%; animation:shimmer 1.4s linear infinite}
+.skel .bar{height:12px; border-radius:6px; background:var(--line); margin-top:8px}
+.skel .bar.short{width:60%}
+@keyframes shimmer{to{background-position:-150% 0}}
+
+.empty{grid-column:1/-1; background:var(--card); border:1.5px dashed var(--line); border-radius:14px; padding:22px; display:flex; flex-wrap:wrap; gap:14px 20px; align-items:center; justify-content:space-between}
+.empty p{margin:0; max-width:60ch}
+.empty h3{margin:0 0 4px; font-family:var(--f-display); font-size:20px}
+.examples-label{grid-column:1/-1; margin:8px 0 -14px; font-family:var(--f-mono); font-size:12.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft)}
+.book.example{opacity:.92}
+
+/* buttons */
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border:1.5px solid var(--line); background:var(--card); padding:10px 16px; border-radius:10px; font-weight:600; font-size:15px; text-decoration:none; color:var(--ink)}
+.btn:hover{border-color:var(--ink-soft)}
+.btn-dark{background:var(--ink); color:var(--card); border-color:var(--ink)}
+.btn-dark:hover{border-color:var(--ink)}
+.btn-danger{color:var(--sell)}
+.btn-danger[data-armed="1"]{background:var(--sell); color:#fff; border-color:var(--sell)}
+.btn:disabled{opacity:.55; cursor:progress}
+
+/* dialogs */
+dialog.sheet{border:0; padding:0; background:var(--card); color:var(--ink); border-radius:18px; width:min(900px, calc(100% - 32px)); max-height:min(92dvh, 940px); box-shadow:0 30px 80px -20px rgba(0,0,0,.5); overflow:auto; overscroll-behavior:contain}
+dialog.sheet.narrow{width:min(640px, calc(100% - 32px))}
+dialog.sheet::backdrop{background:rgba(9,14,28,.58)}
+.sheet-head{position:sticky; top:0; z-index:3; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 20px; background:var(--card); border-bottom:1px solid var(--line)}
+.sheet-head h2{margin:0; font-family:var(--f-display); font-size:20px}
+.x{border:0; background:var(--field); width:38px; height:38px; border-radius:50%; font-size:22px; line-height:1; color:var(--ink-soft); flex:none}
+.sheet-body{padding:20px 22px max(24px, env(safe-area-inset-bottom))}
+
+.detail{display:grid; grid-template-columns:280px minmax(0,1fr); gap:28px}
+.d-cover .cover{max-width:280px}
+.d-price{font-family:var(--f-display); font-weight:700; font-size:26px; margin:0}
+.d-price.sell,.d-price.both{color:var(--sell)}
+.d-price.swap{color:var(--swap)}
+.d-price.give{color:var(--give)}
+.d-price.lend{color:var(--lend)}
+.d-title{margin:4px 0 2px; font-size:26px; line-height:1.2; font-weight:700; overflow-wrap:anywhere; text-wrap:balance}
+html[lang="th"] .d-title{line-height:1.4}
+.d-author{margin:0; color:var(--ink-soft)}
+.facts{display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin:18px 0; padding:0}
+.facts div{background:var(--field); border:1px solid var(--line); border-radius:10px; padding:8px 12px}
+.facts dt{font-size:12.5px; color:var(--ink-soft); font-family:var(--f-mono); letter-spacing:.04em}
+.facts dd{margin:0; font-weight:600}
+.d-block{margin:0 0 14px}
+.d-block h3{margin:0 0 2px; font-size:13px; font-family:var(--f-mono); letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); font-weight:600}
+.d-block p{margin:0; white-space:pre-wrap; overflow-wrap:anywhere}
+.contact{border-top:2px solid var(--ink); padding-top:16px; margin-top:6px; display:grid; gap:12px}
+.btn-ig{display:flex; align-items:center; justify-content:center; gap:10px; background:var(--ink); color:var(--card); text-decoration:none; padding:14px 18px; border-radius:12px; font-family:var(--f-display); font-weight:700; font-size:17px; overflow-wrap:anywhere; text-align:center}
+.btn-ig:hover{filter:brightness(1.12)}
+.hello{display:flex; gap:10px; align-items:stretch; background:var(--field); border:1px dashed var(--line); border-radius:10px; padding:10px 12px}
+.hello p{margin:0; flex:1; font-size:14.5px; overflow-wrap:anywhere}
+.hello .btn{padding:6px 12px; font-size:14px; align-self:center}
+.row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.tip{margin:0; font-size:13.5px; color:var(--ink-soft)}
+.manage{margin-top:18px; background:var(--field); border:1.5px solid var(--line); border-radius:12px; padding:14px; display:grid; gap:12px}
+.manage h3{margin:0; font-size:13px; font-family:var(--f-mono); letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); font-weight:600}
+.statusbtns{display:flex; flex-wrap:wrap; gap:6px}
+.statusbtns button{border:1.5px solid var(--line); background:var(--card); border-radius:999px; padding:7px 13px; font-weight:600; font-size:14px}
+.statusbtns button[aria-pressed="true"]{background:var(--ink); color:var(--card); border-color:var(--ink)}
+
+/* form */
+.form{display:grid; gap:16px}
+.field{display:grid; gap:6px; min-width:0}
+.field > label, .field > .lbl{font-weight:600; font-size:15px}
+.hint{font-size:13.5px; color:var(--ink-soft); margin:0}
+.input{width:100%; border:1.5px solid var(--line); background:var(--field); border-radius:10px; padding:11px 12px; font-size:16px}
+textarea.input{min-height:84px; resize:vertical}
+.input:focus{border-color:var(--focus); outline:none; box-shadow:0 0 0 3px color-mix(in srgb, var(--focus) 25%, transparent)}
+.igwrap{position:relative}
+.igwrap span{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--ink-soft); font-family:var(--f-mono)}
+.igwrap .input{padding-left:30px; font-family:var(--f-mono)}
+.two{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.seg{display:flex; flex-wrap:wrap; gap:8px}
+.seg input{position:absolute; opacity:0; width:1px; height:1px}
+.seg label{border:1.5px solid var(--line); background:var(--field); border-radius:999px; padding:8px 14px; font-weight:600; font-size:15px; cursor:pointer}
+.seg input:checked + label{background:var(--ink); color:var(--card); border-color:var(--ink)}
+.seg input:focus-visible + label{outline:3px solid var(--focus); outline-offset:2px}
+.check{display:flex; gap:10px; align-items:center; font-size:15px; cursor:pointer}
+.check input{width:20px; height:20px; accent-color:var(--ink)}
+.pick{display:grid; grid-template-columns:110px 1fr; gap:16px; align-items:center; border:2px dashed var(--line); border-radius:14px; padding:12px; cursor:pointer; background:var(--field)}
+.pick:hover,.pick.drag{border-color:var(--focus)}
+.pick:focus-within{outline:3px solid var(--focus); outline-offset:2px}
+.pv{position:relative; aspect-ratio:2/3; border-radius:3px 6px 6px 3px; overflow:hidden; background:repeating-linear-gradient(-45deg, var(--line) 0 6px, transparent 6px 12px); display:grid; place-items:center}
+.pv img{width:100%; height:100%; object-fit:cover; display:block}
+.pv svg{color:var(--ink-soft)}
+.pick strong{display:block; font-size:16px}
+.ferr{margin:0; color:var(--sell); font-weight:600; font-size:14.5px; line-height:1.35}
+.form-foot .ferr{flex:1 1 100%; order:-1}
+.form-foot .ferr:empty{display:none}
+.form-foot{position:sticky; bottom:0; background:var(--card); display:flex; flex-wrap:wrap; gap:8px 10px; justify-content:flex-end; align-items:center; padding:12px 0 2px; border-top:1px solid var(--line)}
+
+.toast{position:fixed; left:50%; bottom:max(20px, env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(20px); background:var(--ink); color:var(--card); padding:11px 18px; border-radius:12px; font-weight:600; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:50; max-width:calc(100% - 32px); text-align:center}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+
+footer{border-top:1px solid var(--line); padding:20px 0 36px; display:flex; flex-wrap:wrap; gap:10px 20px; justify-content:space-between; align-items:center; font-size:14px; color:var(--ink-soft)}
+footer p{margin:0}
+
+.pcount{position:absolute; right:7px; bottom:7px; z-index:2; display:inline-flex; align-items:center; gap:4px; background:rgba(15,22,40,.8); color:#fff; font-size:12px; font-weight:700; padding:2px 8px 2px 7px; border-radius:999px; font-variant-numeric:tabular-nums}
+.book.is-reserved .pcount,.book.is-done .pcount,.book.is-lent .pcount,.book.example .pcount{bottom:35px}
+.d-cover{display:grid; gap:10px; align-content:start}
+.d-cover .cover{width:100%}
+.cover.zoom{cursor:zoom-in}
+.thumbs{display:flex; flex-wrap:wrap; gap:8px}
+.thumbs button{width:54px; height:54px; padding:0; border:2px solid var(--line); border-radius:8px; overflow:hidden; background:var(--line)}
+.thumbs button[aria-current="true"]{border-color:var(--ink); box-shadow:0 0 0 2px var(--hi)}
+.thumbs img{width:100%; height:100%; object-fit:cover; display:block}
+.thumbs button{position:relative; width:62px; height:62px}
+.thumbs button.mock{background:radial-gradient(130% 85% at 50% 26%, var(--studio-a), var(--studio-b)); display:grid; place-items:center; perspective:160px}
+.thumbs button.mock img{width:52%; height:auto; aspect-ratio:2/3; border-radius:1px 3px 3px 1px; transform:rotateY(-26deg); box-shadow:3px 4px 6px rgba(0,0,0,.3)}
+.thumbs .tlbl{position:absolute; left:0; right:0; bottom:0; font-size:10px; font-weight:700; line-height:1.5; background:rgba(15,22,40,.78); color:#fff; text-align:center}
+.photo-hint{margin:0; font-size:13px; color:var(--ink-soft)}
+.pgrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(84px, 1fr)); gap:10px}
+.pth{position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; background:var(--line)}
+.pth img{width:100%; height:100%; object-fit:cover; display:block}
+.pth button{position:absolute; top:4px; right:4px; width:28px; height:28px; border-radius:50%; border:0; background:rgba(15,22,40,.82); color:#fff; font-size:17px; line-height:1}
+.padd{aspect-ratio:1; border:2px dashed var(--line); border-radius:10px; display:grid; place-items:center; text-align:center; font-size:13.5px; font-weight:600; color:var(--ink-soft); cursor:pointer; background:var(--field); padding:6px; overflow-wrap:anywhere}
+.padd:hover{border-color:var(--focus)}
+.padd:focus-within{outline:3px solid var(--focus); outline-offset:2px}
+dialog.viewer{border:0; padding:0; margin:0; width:100%; height:100%; max-width:100%; max-height:100%; background:#060912; color:#fff; overflow:hidden}
+dialog.viewer::backdrop{background:#060912}
+.v-top{position:absolute; top:0; left:0; right:0; z-index:2; display:flex; justify-content:space-between; align-items:center; padding:max(10px, env(safe-area-inset-top)) 14px 10px}
+.v-count{font-family:var(--f-mono); font-size:14px}
+.v-top .x{background:rgba(255,255,255,.12); color:#fff}
+.v-stage{position:absolute; inset:58px 0 76px; display:grid; place-items:center; padding:0 12px}
+.v-stage img{max-width:100%; max-height:100%; object-fit:contain; border-radius:4px}
+.v-nav{position:absolute; left:0; right:0; bottom:max(14px, env(safe-area-inset-bottom)); display:flex; justify-content:center; gap:18px}
+.v-nav button{width:50px; height:50px; border-radius:50%; border:1.5px solid rgba(255,255,255,.35); background:rgba(255,255,255,.08); color:#fff; font-size:26px; line-height:1}
+
+.b-social{margin:-4px 0 0; display:flex; gap:10px; font-size:13px; color:var(--ink-soft); align-items:center; font-variant-numeric:tabular-nums}
+.b-social span{display:inline-flex; align-items:center; gap:4px}
+.b-social .on{color:var(--sell)}
+.ico-heart path{fill:none; stroke:currentColor}
+.on .ico-heart path,[aria-pressed="true"] .ico-heart path{fill:currentColor}
+.newchip{position:absolute; top:10px; right:8px; z-index:3; background:var(--sell); color:#fff; font-size:12px; font-weight:700; padding:1px 8px; border-radius:999px; box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.newchip.avail{background:var(--swap); color:var(--card)}
+.b-conf{margin:-2px 0 0; font-size:12.5px; font-weight:600; line-height:1.3}
+.b-conf.fresh{color:var(--swap)}
+.b-conf.stale{color:var(--warn)}
+.b-avail{display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 0}
+.b-avail button{border:1.5px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:5px 11px; min-height:34px; font-size:13px; font-weight:600; line-height:1.1; cursor:pointer}
+.b-avail button:hover{border-color:var(--ink-soft)}
+.b-avail button.go{background:var(--swap); border-color:var(--swap); color:var(--card)}
+.b-avail button[aria-pressed="true"]{border-color:var(--swap); color:var(--swap)}
+.b-avail button:disabled{opacity:.55; cursor:progress}
+.btn.btn-confirm{border-color:var(--swap); color:var(--swap)}
+.top-right{display:flex; align-items:center; gap:8px}
+.acct{border:1.5px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:6px 12px; font-weight:600; font-size:14px; font-family:var(--f-body); cursor:pointer; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.acct.admin{border-color:var(--swap); color:var(--swap)}
+.acct-body{display:grid; gap:12px}
+.acct-body p{margin:0}
+.acct-id{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.acct-id code{font-family:var(--f-mono); font-size:12.5px; background:var(--field); border:1px solid var(--line); border-radius:8px; padding:6px 8px; word-break:break-all}
+.nodel{margin:0; font-size:13px; color:var(--ink-soft)}
+#loginForm{display:grid; gap:14px}
+#acctInfo{display:grid; gap:12px}
+#acctInfo[hidden]{display:none}
+.notice.activity{border-left-color:var(--sell)}
+.notice.activity a{font-weight:600}
+.social{display:grid; gap:10px; margin:4px 0 18px}
+.like{display:inline-flex; align-items:center; gap:5px; border:0; background:transparent; color:var(--ink-soft); padding:6px 10px 6px 4px; margin-left:-4px; min-height:36px; border-radius:999px; font-weight:700; font-size:15px; font-variant-numeric:tabular-nums; -webkit-tap-highlight-color:transparent}
+.like .ico-heart{width:22px; height:22px; transition:transform .15s}
+.like:hover:not(.own) .ico-heart{transform:scale(1.1)}
+.like[aria-pressed="true"]{color:var(--sell)}
+.like.own{cursor:default}
+.like.pop .ico-heart{animation:pop .4s cubic-bezier(.2,.8,.3,1.4)}
+@keyframes pop{0%{transform:scale(1)}35%{transform:scale(1.45)}100%{transform:scale(1)}}
+.like.big{border:2px solid var(--sell); color:var(--sell); background:var(--card); padding:9px 16px; margin:0; border-radius:12px; gap:8px; font-size:16px}
+.like.big[aria-pressed="true"]{background:var(--sell); color:#fff}
+.like.big.own{border-color:var(--line); color:var(--ink)}
+.like.big .n{font-family:var(--f-mono); font-weight:600; min-width:1ch}
+.ccount{display:inline-flex; align-items:center; gap:4px; color:var(--ink-soft); font-size:14px; font-weight:600}
+.ccount svg{width:18px; height:18px}
+#dGoChat b{font-family:var(--f-mono); font-weight:600}
+.queue{margin:0; font-size:14px; color:var(--ink-soft)}
+.queue strong{color:var(--ink)}
+.chat{border-top:2px solid var(--ink); margin-top:18px; padding-top:14px; scroll-margin-top:70px}
+.chat h3{margin:0 0 2px; font-family:var(--f-display); font-size:19px}
+.msgs{list-style:none; margin:12px 0; padding:4px 2px; display:flex; flex-direction:column; gap:10px; max-height:min(52vh, 440px); overflow-y:auto; overscroll-behavior:contain}
+.msg{max-width:86%; align-self:flex-start; background:var(--field); border:1px solid var(--line); border-radius:14px 14px 14px 4px; padding:8px 12px}
+.msg.mine{align-self:flex-end; background:var(--ink); border-color:var(--ink); color:var(--card); border-radius:14px 14px 4px 14px}
+.msg.poster:not(.mine){box-shadow:inset 4px 0 0 var(--hi)}
+.msg p{margin:2px 0 0; white-space:pre-wrap; overflow-wrap:anywhere}
+.mmeta{display:flex; flex-wrap:wrap; gap:2px 8px; align-items:center; font-size:12.5px}
+.mmeta .who{font-weight:700}
+.mmeta time{opacity:.75}
+.mbadge{background:var(--hi); color:var(--on-hi); font-weight:700; border-radius:999px; padding:0 7px; font-size:11.5px}
+.mdel{border:0; background:transparent; color:inherit; text-decoration:underline; font-size:12px; padding:0; opacity:.75}
+.mdel[data-armed="1"]{opacity:1; font-weight:700}
+.msgs .none{color:var(--ink-soft); font-size:14px; align-self:center; text-align:center; padding:12px}
+.quick{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px}
+.quick button{border:1.5px solid var(--line); background:var(--card); border-radius:999px; padding:5px 11px; font-size:13.5px}
+.quick button:hover{border-color:var(--ink-soft)}
+.row-input{display:flex; gap:8px; align-items:flex-end}
+.row-input textarea{min-height:46px; max-height:140px; resize:none}
+
+.tabs{display:flex; gap:4px; border-bottom:1.5px solid var(--line); margin-top:10px}
+.tab{padding:10px 14px 9px; font-weight:700; font-size:16px; text-decoration:none; color:var(--ink-soft); border-bottom:3px solid transparent; margin-bottom:-1.5px}
+.tab:hover{color:var(--ink)}
+.tab[aria-current="page"]{color:var(--ink); border-bottom-color:var(--ink)}
+.ap-head{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:20px; padding:30px 0 26px}
+.ap-title{font-family:var(--f-display); font-weight:700; font-size:clamp(2.1rem, 3vw + 1rem, 3.4rem); line-height:1.1; margin:0; text-wrap:balance}
+.ap-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(290px, 1fr)); gap:26px; padding-bottom:40px}
+.ap-card{background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column; min-width:0}
+.ap-poster{position:relative; display:block; width:100%; border:0; padding:0; background:var(--field); aspect-ratio:4/5; cursor:zoom-in}
+.ap-poster img{width:100%; height:100%; object-fit:contain; display:block}
+.ap-body{padding:16px 18px 18px; display:grid; gap:8px}
+.ap-body h3{margin:0; font-family:var(--f-display); font-size:21px; line-height:1.3; overflow-wrap:anywhere}
+.ap-pill{justify-self:start; font-size:12.5px; font-weight:700; padding:3px 10px; border-radius:999px}
+.ap-pill.open{background:color-mix(in srgb, var(--swap) 16%, transparent); color:var(--swap)}
+.ap-pill.soon{background:color-mix(in srgb, var(--focus) 14%, transparent); color:var(--focus)}
+.ap-pill.closed{background:var(--field); color:var(--ink-soft); border:1px solid var(--line)}
+.ap-meta{margin:0; font-weight:600}
+.ap-window{margin:0; font-size:14px; color:var(--ink-soft)}
+.ap-count{margin:0; font-family:var(--f-mono); font-size:15px; font-weight:600; font-variant-numeric:tabular-nums}
+.ap-count.open{color:var(--swap)}
+.ap-count.soon{color:var(--focus)}
+.ap-details{margin:0; font-size:14.5px; white-space:pre-wrap; overflow-wrap:anywhere; color:var(--ink-soft)}
+.ap-cta{margin-top:6px}
+.ap-cta.off{display:flex; justify-content:center; text-align:center; padding:14px 18px; border-radius:12px; background:var(--field); border:1.5px dashed var(--line); color:var(--ink-soft); font-weight:700}
+.ap-own{display:flex; gap:8px; flex-wrap:wrap; border-top:1px solid var(--line); padding-top:12px; margin-top:4px}
+.ap-fake{position:absolute; inset:0; display:grid; place-content:center; text-align:center; gap:10px; padding:20px; color:#fff; background:radial-gradient(90% 60% at 80% 10%, rgba(255,222,59,.35), transparent 60%), linear-gradient(160deg, #1f3c8f, #0e1b45)}
+.ap-fake b{font-family:var(--f-display); font-size:32px; line-height:1.1}
+.ap-fake span{font-family:var(--f-mono); letter-spacing:.2em; font-size:13px; color:var(--hi)}
+.ap-note{grid-column:1/-1; margin:0; color:var(--ink-soft)}
+.pv.poster{aspect-ratio:4/5}
+
+/* banner carousel */
+.banner{position:relative; margin:22px 0 22px; border-radius:22px; overflow:hidden; color:#fff; isolation:isolate;
+  background:
+    linear-gradient(90deg, #C2304F 0 34px, #FFDE3B 34px 50px, #0B7A6E 50px 92px, #6A3DC0 92px 114px, #B85A00 114px 146px, #2E62D6 146px 170px, #FFDE3B 170px 184px, #C2304F 184px 224px) left bottom / 224px 14px repeat-x,
+    linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px) 0 0 / 28px 28px,
+    var(--bn);
+  box-shadow:0 24px 50px -30px rgba(10,16,32,.7)}
+.bn-viewport{overflow:hidden}
+.bn-track{display:flex; transition:transform .55s cubic-bezier(.2,.7,.2,1)}
+.bn-slide{flex:0 0 100%; min-width:0; display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr); align-items:center; gap:24px; padding:clamp(28px,4.5vw,56px) clamp(24px,6vw,80px) 62px}
+.bn-eyebrow{margin:0 0 12px; font-family:var(--f-mono); font-size:13px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--hi)}
+.bn-eyebrow.pill{display:inline-block; text-transform:none; letter-spacing:0; font-family:var(--f-body); font-weight:700; font-size:14px; padding:4px 12px; border-radius:999px; background:rgba(255,255,255,.14); color:#fff}
+.bn-eyebrow.pill.open{background:#2BD1A6; color:#062A22}
+.bn-eyebrow.pill.soon{background:#A9C2FF; color:#0D1A44}
+.bn-title{font-family:var(--f-display); font-weight:700; font-size:clamp(2rem, 3.2vw + 1rem, 4.1rem); line-height:1.05; margin:0; color:#fff; text-wrap:balance; overflow-wrap:anywhere}
+.bn-title mark{color:var(--on-hi); padding:0 .12em; margin:0 -.04em; border-radius:.12em; background:linear-gradient(transparent 10%, var(--hi) 10%, var(--hi) 90%, transparent 90%) no-repeat 0 0 / 100% 100%; -webkit-box-decoration-break:clone; box-decoration-break:clone}
+.bn-sub{margin:14px 0 0; max-width:52ch; font-size:17.5px; color:rgba(255,255,255,.84)}
+.bn-count{margin:12px 0 0; font-family:var(--f-mono); font-weight:600; font-size:16px; color:var(--hi); font-variant-numeric:tabular-nums}
+.bn-ctas{display:flex; flex-wrap:wrap; gap:12px; margin-top:24px}
+.bn-btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 22px; border-radius:999px; font-weight:700; font-size:16px; text-decoration:none; border:2px solid rgba(255,255,255,.75); color:#fff; background:transparent; cursor:pointer; font-family:var(--f-body)}
+.bn-btn:hover{background:rgba(255,255,255,.1)}
+.bn-btn.primary{background:var(--hi); color:#15213B; border-color:var(--hi); box-shadow:0 4px 0 #000}
+.bn-btn.primary:hover{filter:brightness(1.06)}
+.bn-btn:disabled{opacity:.65; cursor:default; box-shadow:none; background:rgba(255,255,255,.12); color:#fff; border-color:rgba(255,255,255,.3)}
+.bn-art{position:relative; min-height:320px}
+.bn-sun{position:absolute; left:50%; top:50%; width:min(330px, 82%); aspect-ratio:1; border-radius:50%; transform:translate(-50%,-50%); background:var(--hi); box-shadow:0 0 0 22px rgba(255,222,59,.16), 0 0 0 46px rgba(255,222,59,.07)}
+.bn-cover{position:absolute; width:34%; aspect-ratio:2/3; border-radius:3px 8px 8px 3px; overflow:hidden; background:#2a3550; box-shadow:0 22px 34px -14px rgba(0,0,0,.65)}
+.bn-cover::after{content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(90deg, rgba(0,0,0,.22) 0, rgba(255,255,255,.16) 3px, rgba(0,0,0,.05) 7px, transparent 14px)}
+.bn-cover img{width:100%; height:100%; object-fit:cover; display:block}
+.bn-cover .fake-title{font-size:clamp(12px, 1.3vw, 17px)}
+.n4 .c0{left:3%; top:20%; transform:rotate(-10deg)} .n4 .c1{left:22%; top:6%; transform:rotate(-3deg); z-index:2} .n4 .c2{left:42%; top:13%; transform:rotate(4deg); z-index:3} .n4 .c3{left:62%; top:23%; transform:rotate(11deg); z-index:2}
+.n3 .c0{left:10%; top:16%; transform:rotate(-8deg)} .n3 .c1{left:33%; top:7%; transform:rotate(-1deg); z-index:2} .n3 .c2{left:56%; top:17%; transform:rotate(8deg); z-index:3}
+.n2 .c0{left:18%; top:12%; transform:rotate(-6deg)} .n2 .c1{left:46%; top:16%; transform:rotate(6deg); z-index:2}
+.n1 .c0{left:33%; top:10%; transform:rotate(-4deg)}
+.bn-poster{position:absolute; left:50%; top:50%; width:min(250px, 62%); aspect-ratio:4/5; transform:translate(-50%,-50%) rotate(3deg); background:#fff; padding:8px; border-radius:4px; box-shadow:0 24px 40px -16px rgba(0,0,0,.7)}
+.bn-poster img{width:100%; height:100%; object-fit:cover; display:block; border-radius:2px}
+.bn-poster .ap-fake{inset:8px}
+.bn-poster::before{content:""; position:absolute; top:-12px; left:50%; width:90px; height:24px; transform:translateX(-50%) rotate(-3deg); background:rgba(255,255,255,.7); z-index:2}
+.bn-nav{position:absolute; top:50%; transform:translateY(-50%); width:46px; height:46px; border-radius:50%; border:0; background:#fff; color:#15213B; display:grid; place-items:center; box-shadow:0 6px 18px rgba(0,0,0,.3); z-index:3}
+.bn-nav.prev{left:14px} .bn-nav.next{right:14px}
+.bn-dots{position:absolute; left:0; right:0; bottom:28px; display:flex; justify-content:center; gap:8px; z-index:3}
+.bn-dots button{width:9px; height:9px; border-radius:999px; border:0; padding:0; background:rgba(255,255,255,.45); transition:width .2s}
+.bn-dots button[aria-current="true"]{background:#fff; width:26px}
+.banner.single .bn-nav,.banner.single .bn-dots{display:none}
+.hero-strip{display:grid; grid-template-columns:auto minmax(0,1fr); gap:24px 40px; align-items:center; padding:2px 0 26px}
+.hero-strip .card-steps{transform:none; padding:14px 20px 10px}
+.hero-strip .card-steps::before{display:none}
+.hero-strip .card-steps ol{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:0 16px}
+.hero-strip .card-steps li{border-bottom:0; border-left:1px dashed var(--line); padding:8px 0 8px 12px}
+.hero-strip .card-steps li:first-child{border-left:0; padding-left:0}
+/* apparel store */
+.ap-cats{display:flex; flex-wrap:wrap; gap:2px 22px; padding:0 2px 10px; border-bottom:1.5px solid var(--line); margin-bottom:24px}
+.ap-catlink{border:0; background:none; padding:8px 0; font-weight:700; font-size:16px; color:var(--ink-soft); border-bottom:3px solid transparent}
+.ap-catlink:hover{color:var(--ink)}
+.ap-catlink[aria-pressed="true"]{color:var(--ink); border-bottom-color:var(--ink)}
+.ap-tiles{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:18px; margin-bottom:36px}
+.ap-tile{--tc:var(--swap); display:flex; flex-direction:column; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--card); padding:0; text-align:center; box-shadow:var(--shadow); color:var(--ink); transition:transform .15s}
+.ap-tile.q-closing{--tc:var(--sell)} .ap-tile.q-soon{--tc:var(--focus)} .ap-tile.q-budget{--tc:var(--lend)}
+.ap-tile-top{display:grid; place-items:center; gap:4px; padding:22px 10px 18px; background:repeating-linear-gradient(-45deg, color-mix(in srgb, var(--tc) 11%, transparent) 0 10px, transparent 10px 20px), var(--card)}
+.ap-tile-top b{font-family:var(--f-display); font-size:44px; line-height:1; color:var(--tc)}
+.ap-tile-top span{font-family:var(--f-display); font-weight:700; font-size:19px}
+.ap-tile-band{background:var(--tc); color:#fff; font-weight:600; font-size:14px; padding:8px 10px}
+.ap-tile-go{padding:12px 10px 14px; font-weight:700; font-size:16px; background:var(--field)}
+.ap-tile:hover:not(:disabled){transform:translateY(-3px)}
+.ap-tile[aria-pressed="true"]{outline:3px solid var(--tc); outline-offset:2px}
+.ap-tile:disabled{opacity:.5; cursor:default}
+.ap-section-h{font-family:var(--f-display); font-size:clamp(1.6rem, 2vw + 1rem, 2.4rem); margin:0 0 16px}
+.ap-catgrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(170px,1fr)); gap:22px; margin-bottom:40px}
+.ap-catcard{border:0; background:none; padding:0; text-align:center; display:grid; gap:6px; color:var(--ink); cursor:pointer}
+.ap-catimg{position:relative; display:block; aspect-ratio:1; border-radius:16px; overflow:hidden; background:var(--card); border:1px solid var(--line)}
+.ap-catimg img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .3s}
+.ap-catimg.cut{background:radial-gradient(120% 90% at 50% 30%, var(--studio-a), var(--studio-b))}
+.ap-catimg.cut img{object-fit:contain; padding:10%; filter:drop-shadow(0 10px 12px rgba(0,0,0,.28))}
+.ap-poster.cut{background:radial-gradient(120% 90% at 50% 30%, var(--studio-a), var(--studio-b))}
+.ap-poster.cut img{padding:8%; filter:drop-shadow(0 14px 16px rgba(0,0,0,.3))}
+.bn-poster.cut{background:none; padding:0; box-shadow:none; border-radius:0; width:min(330px, 80%); aspect-ratio:1; transform:translate(-50%,-50%) rotate(-4deg)}
+.bn-poster.cut::before{display:none}
+.bn-poster.cut img{object-fit:contain; border-radius:0; filter:drop-shadow(0 22px 22px rgba(0,0,0,.5))}
+.ap-catcard:hover .ap-catimg img{transform:scale(1.05)}
+.ap-catname{font-size:17px; font-weight:600}
+.ap-catn{font-size:13px; color:var(--ink-soft)}
+.ap-listhead{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:16px; border-bottom:2px solid var(--ink); padding-bottom:14px; margin-bottom:22px; scroll-margin-top:16px}
+.ap-listhead h2{margin:0; font-family:var(--f-display); font-size:clamp(1.6rem, 2vw + 1rem, 2.4rem)}
+.ap-listhead p{margin:4px 0 0; color:var(--ink-soft); font-family:var(--f-mono); font-size:14px}
+.ap-actions{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+.ap-edit-toggle[aria-pressed="true"]{background:var(--ink); color:var(--card); border-color:var(--ink)}
+#apEditNote{margin-top:4px}
+.ap-catlbl{font-size:12px; font-family:var(--f-mono); letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft)}
+.ap-card{scroll-margin-top:16px; transition:outline-color .3s}
+.ap-card.flash{outline:3px solid var(--hi); outline-offset:3px}
+.toolbar{scroll-margin-top:10px}
+
+@media (max-width: 860px){
+  .hero-strip{grid-template-columns:1fr}
+  .ap-tiles{grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px}
+}
+@media (max-width: 640px){
+  .banner{margin:14px 0 18px; border-radius:18px}
+  .bn-slide{grid-template-columns:1fr; padding:24px 20px 58px; gap:6px}
+  .bn-art{min-height:220px}
+  .bn-sun{width:min(220px, 70%)}
+  .bn-cover{width:28%}
+  .bn-poster{width:min(170px, 52%)}
+  .bn-sub{font-size:16px}
+  .bn-nav{display:none}
+  .hero-strip .card-steps ol{grid-template-columns:1fr}
+  .hero-strip .card-steps li{border-left:0; padding-left:0; border-bottom:1px dashed var(--line)}
+  .hero-strip .card-steps li:last-child{border-bottom:0}
+  .ap-tile-top b{font-size:34px}
+  .ap-tile-top span{font-size:16px}
+  .ap-catgrid{grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px}
+}
+@media (prefers-reduced-motion: reduce){ .bn-track{transition:none} }
+
+@media (max-width: 860px){
+  .hero{grid-template-columns:1fr; gap:30px; padding-top:22px}
+  .card-steps{transform:none; max-width:520px}
+}
+@media (max-width: 640px){
+  .wrap{padding:0 16px}
+  .lede{font-size:16.5px}
+  .shelf{grid-template-columns:repeat(2, minmax(0,1fr)); gap:24px 14px}
+  .toolbar{gap:8px}
+  .search{flex-basis:100%}
+  .sel{flex:1 1 40%}
+  .stats{gap:18px}
+  .stat b{font-size:22px}
+  .two{grid-template-columns:1fr}
+  dialog.sheet,dialog.sheet.narrow{width:100%; max-width:100%; margin:auto 0 0; border-radius:18px 18px 0 0; max-height:92dvh}
+  .detail{grid-template-columns:1fr; gap:18px}
+  .d-cover{justify-items:center}
+  .d-cover .cover{width:min(220px, 62vw)}
+  .sheet-body{padding:16px 16px max(22px, env(safe-area-inset-bottom))}
+  .pick{grid-template-columns:86px 1fr}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important; transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="top wrap">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="2" y="5" width="5" height="18" rx="1" fill="var(--sell)"/><rect x="8" y="3" width="5" height="20" rx="1" fill="var(--focus)"/><rect x="14.5" y="6" width="5" height="17" rx="1" transform="rotate(-12 17 14.5)" fill="var(--hi)" stroke="var(--on-hi)" stroke-width="1"/><rect x="1" y="23" width="24" height="2" rx="1" fill="currentColor"/></svg>
+    <span>PCSHSSK&nbsp;BOOKS</span>
+  </div>
+  <div class="top-right">
+  <button type="button" class="acct" id="acctBtn" hidden data-i18n="acct_login">Admin login</button>
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="th" aria-pressed="false">ไทย</button>
+  </div>
+  </div>
+</header>
+
+<nav class="wrap" aria-label="Sections">
+  <div class="tabs">
+    <a class="tab" href="#books" data-view="books" data-i18n="tab_books" aria-current="page">Books</a>
+    <a class="tab" href="#apparel" data-view="apparel" data-i18n="tab_apparel">School apparel</a>
+  </div>
+</nav>
+
+<main class="wrap">
+<div id="viewBooks">
+  <section class="banner" id="bnBooks" aria-roledescription="carousel" aria-label="Highlights">
+    <div class="bn-viewport"><div class="bn-track"></div></div>
+    <button type="button" class="bn-nav prev" aria-label="Previous slide"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" class="bn-nav next" aria-label="Next slide"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M7.5 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="bn-dots"></div>
+  </section>
+  <section class="hero-strip">
+        <div class="stats" aria-live="polite">
+          <p class="stat"><b id="stTotal">–</b><span data-i18n="st_total">on the shelf</span></p>
+          <p class="stat"><b id="stSell">–</b><span data-i18n="st_sell">for sale</span></p>
+          <p class="stat"><b id="stSwap">–</b><span data-i18n="st_swap">to swap</span></p>
+          <p class="stat"><b id="stGive">–</b><span data-i18n="st_give">free</span></p>
+          <p class="stat"><b id="stLend">–</b><span data-i18n="st_lend">to borrow</span></p>
+        </div>
+    <aside class="card-steps" aria-labelledby="howTitle">
+      <h2 id="howTitle"><span data-i18n="how">How it works</span><span aria-hidden="true">No. 001</span></h2>
+      <ol>
+        <li><b>01</b><span><span data-i18n="h1t">Snap the cover</span><small data-i18n="h1d">A clear photo of the front.</small></span></li>
+        <li><b>02</b><span><span data-i18n="h2t">Set a price or a swap</span><small data-i18n="h2d">Say what you'd trade it for.</small></span></li>
+        <li><b>03</b><span><span data-i18n="h3t">Chat on Instagram</span><small data-i18n="h3d">Meet at school to hand it over.</small></span></li>
+      </ol>
+    </aside>
+  </section>
+
+  <div class="notice activity" id="activity" hidden><p id="activityText"></p></div>
+  <div class="notice" id="notice" hidden><p id="noticeText"></p><button type="button" id="noticeDismiss" hidden data-i18n="dismiss">Got it</button></div>
+
+  <div class="toolbar" role="search">
+    <label class="search">
+      <span class="vh" data-i18n="search_lbl">Search books</span>
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="7.5" cy="7.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 12l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="q" type="search" autocomplete="off" data-i18n-ph="search_ph" placeholder="Search title, author, subject or @ig">
+    </label>
+    <div class="chips" role="group" aria-label="Listing type">
+      <button type="button" class="chip" data-type="all" aria-pressed="true" data-i18n="all">All</button>
+      <button type="button" class="chip" data-type="sell" aria-pressed="false" data-i18n="f_sell">For sale</button>
+      <button type="button" class="chip" data-type="swap" aria-pressed="false" data-i18n="f_swap">To swap</button>
+      <button type="button" class="chip" data-type="give" aria-pressed="false" data-i18n="f_give">Free</button>
+      <button type="button" class="chip" data-type="lend" aria-pressed="false" data-i18n="f_lend">To borrow</button>
+    </div>
+    <label class="vh" for="fSubject" data-i18n="subject">Subject</label>
+    <select class="sel" id="fSubject"></select>
+    <label class="vh" for="fGrade" data-i18n="grade">Grade</label>
+    <select class="sel" id="fGrade"></select>
+    <label class="vh" for="fSort" data-i18n="sort">Sort</label>
+    <select class="sel" id="fSort"></select>
+  </div>
+  <div class="resultline">
+    <div class="row"><span id="resultCount" aria-live="polite"></span><button type="button" class="linkbtn" id="clearBtn" hidden data-i18n="clear">Clear filters</button></div>
+    <div class="row">
+      <label class="toggle" id="mineWrap" hidden><input type="checkbox" id="fMine"><span data-i18n="mine">My listings</span></label>
+      <label class="toggle"><input type="checkbox" id="fDone"><span data-i18n="show_done">Show sold &amp; swapped</span></label>
+    </div>
+  </div>
+
+  <section class="shelf" id="shelf" aria-label="Books"></section>
+</div>
+
+<section id="viewApparel" hidden aria-label="School apparel">
+  <section class="banner" id="bnStore" aria-roledescription="carousel" aria-label="Featured">
+    <div class="bn-viewport"><div class="bn-track"></div></div>
+    <button type="button" class="bn-nav prev" aria-label="Previous slide"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" class="bn-nav next" aria-label="Next slide"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M7.5 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="bn-dots"></div>
+  </section>
+  <nav class="ap-cats" id="apCats" aria-label="Categories" hidden></nav>
+  <div class="ap-tiles" id="apTiles" hidden></div>
+  <h2 class="ap-section-h" id="apCatsHead" hidden data-i18n="ap_by_cat">Shop by category</h2>
+  <div class="ap-catgrid" id="apCatGrid" hidden></div>
+  <div class="notice warn" id="apEditNote" hidden><p data-i18n="ap_edit_note">Editing the shop.</p><button type="button" id="apEditDone" data-i18n="ap_edit_done">Done</button></div>
+  <div class="ap-listhead" id="apListHead">
+    <div><h2 id="apListTitle">All items</h2><p><span id="apCount"></span> <button type="button" class="linkbtn" id="apClear" hidden data-i18n="clear">Clear filters</button></p></div>
+    <div class="ap-actions">
+      <button type="button" class="btn ap-edit-toggle" id="apEditToggle" hidden aria-pressed="false">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 2.5l3 3L6 13H3v-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <span id="apEditLbl">Edit shop</span>
+      </button>
+      <button type="button" class="btn-post" id="apAddBtn" hidden>
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2v14M2 9h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+        <span data-i18n="ap_add">Add item</span>
+      </button>
+    </div>
+  </div>
+  <div class="ap-grid" id="apGrid"></div>
+</section>
+</main>
+
+<footer class="wrap">
+  <p data-i18n="foot">Run by PCSHSSK students. Each listing is posted by the book's owner.</p>
+  <button type="button" class="linkbtn" id="settingsBtn" hidden data-i18n="settings">Page settings</button>
+</footer>
+
+<!-- Book detail -->
+<dialog class="sheet" id="detailDlg" aria-labelledby="dTitle">
+  <div class="sheet-head"><h2 data-i18n="detail_head">Book</h2><button type="button" class="x" data-close aria-label="Close">×</button></div>
+  <div class="sheet-body detail">
+    <div class="d-cover"><div class="cover" id="dCover"></div><div class="thumbs" id="dThumbs" hidden></div><p class="photo-hint" id="dPhotoHint" hidden data-i18n="enlarge">Tap the photo to see it bigger</p></div>
+    <div>
+      <p class="d-price" id="dPrice"></p>
+      <h3 class="d-title" id="dTitle"></h3>
+      <p class="d-author" id="dAuthor"></p>
+      <dl class="facts" id="dFacts"></dl>
+      <div class="d-block" id="dWantsBlock"><h3 data-i18n="wants_h">Wants in exchange</h3><p id="dWants"></p></div>
+      <div class="d-block" id="dDetailsBlock"><h3 data-i18n="details_h">Details</h3><p id="dDetails"></p></div>
+      <div class="social" id="dSocial">
+        <div class="row">
+          <button type="button" class="like big" id="dLike" data-like="" aria-pressed="false"><svg class="ico-heart" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17s-6.5-4.1-6.5-8.6A3.6 3.6 0 0 1 10 6a3.6 3.6 0 0 1 6.5 2.4C16.5 12.9 10 17 10 17z" stroke-width="2" stroke-linejoin="round"/></svg><span class="lbl">Interested</span><span class="n">0</span></button>
+          <button type="button" class="btn" id="dGoChat"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span data-i18n="chat_btn">Chat</span><b id="dChatCount"></b></button>
+        </div>
+        <p class="queue" id="dQueue" hidden></p>
+      </div>
+      <div class="contact" id="dContact">
+        <a class="btn-ig" id="dDm" href="#" target="_blank" rel="noopener noreferrer">
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="2" width="16" height="16" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="14.6" cy="5.4" r="1.2" fill="currentColor"/></svg>
+          <span id="dDmText"></span>
+        </a>
+        <div class="hello"><p id="dHello"></p><button type="button" class="btn" id="dCopy" data-i18n="copy">Copy</button></div>
+        <div class="row"><a class="btn" id="dProfile" href="#" target="_blank" rel="noopener noreferrer" data-i18n="profile">View profile</a><button type="button" class="btn" id="dCopyIg"></button></div>
+        <p class="tip" data-i18n="tip">Meet at school to hand over books, and check the book before you pay.</p>
+      </div>
+      <p class="tip" id="dNoIg" hidden data-i18n="no_ig">No Instagram added. Use the chat below.</p>
+      <section class="chat" id="dChat" aria-labelledby="chatH">
+        <h3 id="chatH" data-i18n="chat_h">Chat</h3>
+        <p class="tip" data-i18n="chat_public">Everyone who can open this page sees these messages.</p>
+        <ol class="msgs" id="dMsgs" aria-live="polite"></ol>
+        <form id="chatForm" novalidate>
+          <div class="quick" id="dQuick"></div>
+          <div class="row-input">
+            <label class="vh" for="chatInput" data-i18n="chat_ph">Write a message</label>
+            <textarea class="input" id="chatInput" rows="1" maxlength="500" enterkeyhint="send" data-i18n-ph="chat_ph"></textarea>
+            <button type="submit" class="btn btn-dark" id="chatSend" data-i18n="send">Send</button>
+          </div>
+          <p class="ferr" id="chatErr" role="alert"></p>
+        </form>
+        <p class="tip" id="chatRo" hidden data-i18n="chat_ro">Only invited members can chat.</p>
+      </section>
+      <div class="manage" id="dManage" hidden>
+        <h3 id="dManageTitle"></h3>
+        <div class="statusbtns" role="group" aria-label="Status">
+          <button type="button" data-status="available" data-i18n="st_available">Available</button>
+          <button type="button" data-status="reserved" data-i18n="st_reserved">Reserved</button>
+          <button type="button" data-status="lent" data-i18n="st_lent">On loan</button>
+          <button type="button" data-status="done" data-i18n="st_done">Sold / swapped</button>
+        </div>
+        <div class="row">
+          <button type="button" class="btn btn-confirm" id="dConfirm" data-i18n="av_confirm_btn" hidden>Confirm still available</button>
+          <button type="button" class="btn" id="dEdit" data-i18n="edit">Edit</button>
+          <button type="button" class="btn btn-danger" id="dDelete" data-i18n="delete">Delete</button>
+        </div>
+        <p class="nodel" id="dNoDel" hidden data-i18n="nodel">Only the site admin can delete listings. Mark it as taken instead.</p>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- Post / edit form -->
+<dialog class="sheet narrow" id="formDlg" aria-labelledby="formTitle">
+  <form id="bookForm" novalidate>
+    <div class="sheet-head"><h2 id="formTitle">Post a book</h2><button type="button" class="x" data-close aria-label="Close">×</button></div>
+    <div class="sheet-body form">
+      <div class="field">
+        <span class="lbl" data-i18n="cover">Cover photo</span>
+        <label class="pick" id="pick" for="fmCover">
+          <span class="pv" id="pv"><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="4" y="8" width="26" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="17" cy="18" r="5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 8l2-3h6l2 3" fill="none" stroke="currentColor" stroke-width="2.4"/></svg></span>
+          <span><strong id="pickText">Tap to add a photo of the cover</strong><span class="hint" data-i18n="pick_hint">Front cover, good light, whole book in the frame.</span></span>
+        </label>
+        <input class="vh" type="file" id="fmCover" accept="image/*">
+      </div>
+      <div class="field">
+        <span class="lbl" data-i18n="photos">More photos (optional)</span>
+        <p class="hint" data-i18n="photos_hint">Inside pages, notes, any damage. Up to 4.</p>
+        <div class="pgrid" id="pgrid"></div>
+      </div>
+      <div class="field">
+        <label for="fmTitle" data-i18n="title">Book title</label>
+        <input class="input" id="fmTitle" maxlength="120" autocomplete="off" data-i18n-ph="title_ph">
+      </div>
+      <div class="field">
+        <label for="fmAuthor" data-i18n="author">Author or publisher (optional)</label>
+        <input class="input" id="fmAuthor" maxlength="80" autocomplete="off">
+      </div>
+      <div class="two">
+        <div class="field"><label for="fmSubject" data-i18n="subject">Subject</label><select class="input sel" id="fmSubject"></select></div>
+        <div class="field"><label for="fmGrade" data-i18n="grade">Grade</label><select class="input sel" id="fmGrade"></select></div>
+      </div>
+      <div class="field">
+        <span class="lbl" id="condLbl" data-i18n="condition">Condition</span>
+        <div class="seg" role="radiogroup" aria-labelledby="condLbl" id="condSeg"></div>
+        <label class="check"><input type="checkbox" id="fmNotes"><span data-i18n="has_notes">Has notes or highlights inside</span></label>
+      </div>
+      <div class="field">
+        <span class="lbl" id="typeLbl" data-i18n="type">I want to</span>
+        <div class="seg" role="radiogroup" aria-labelledby="typeLbl" id="typeSeg"></div>
+        <p class="hint" id="giveNote" hidden data-i18n="give_note">No price, no swap.</p>
+      </div>
+      <div class="field" id="priceField">
+        <label for="fmPrice" data-i18n="price">Price (baht)</label>
+        <input class="input" id="fmPrice" type="number" inputmode="numeric" min="0" max="99999" step="1">
+        <p class="hint" data-i18n="price_hint">Giving it away? Choose “Pass on free” above.</p>
+      </div>
+      <div class="field" id="wantsField">
+        <label for="fmWants" data-i18n="wants">What would you swap it for? (optional)</label>
+        <input class="input" id="fmWants" maxlength="140" autocomplete="off" data-i18n-ph="wants_ph">
+      </div>
+      <div class="field" id="daysField" hidden>
+        <label for="fmDays" data-i18n="lend_days">Lend for how many days?</label>
+        <input class="input" id="fmDays" type="number" inputmode="numeric" min="1" max="180" step="1" value="14">
+        <p class="hint" data-i18n="lend_hint">Mark it “On loan” when you hand it over.</p>
+      </div>
+      <div class="field">
+        <label for="fmDetails" data-i18n="details">More details (optional)</label>
+        <textarea class="input" id="fmDetails" maxlength="600" data-i18n-ph="details_ph"></textarea>
+      </div>
+      <div class="field">
+        <label for="fmIg" data-i18n="ig">Your Instagram</label>
+        <div class="igwrap"><span aria-hidden="true">@</span><input class="input" id="fmIg" maxlength="60" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="your.name"></div>
+        <p class="hint" data-i18n="ig_hint">People who want the book will message you here.</p>
+      </div>
+      <div class="form-foot">
+        <p class="ferr" id="formErr" role="alert"></p>
+        <button type="button" class="btn" data-close data-i18n="cancel">Cancel</button>
+        <button type="submit" class="btn btn-dark" id="submitBtn">Post book</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<!-- Owner settings -->
+<dialog class="sheet narrow" id="acctDlg" aria-labelledby="acctTitle">
+  <div class="sheet-head"><h2 id="acctTitle" data-i18n="acct_title">Admin login</h2><button type="button" class="x" data-close aria-label="Close">×</button></div>
+  <div class="sheet-body acct-body">
+    <form id="loginForm" novalidate>
+      <div class="field"><label for="loginUser" data-i18n="acct_user_lbl">Username</label><input id="loginUser" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="80" required></div>
+      <div class="field"><label for="loginPass" data-i18n="acct_pass_lbl">Password</label><input id="loginPass" type="password" autocomplete="current-password" maxlength="128" required></div>
+      <p class="ferr" id="acctErr" role="alert"></p>
+      <div class="form-foot"><button type="submit" class="btn btn-dark" id="loginBtn" data-i18n="acct_btn">Log in</button></div>
+    </form>
+    <div id="acctInfo" hidden>
+      <p id="acctStatus"></p>
+      <p class="hint" id="acctRole"></p>
+      <div class="acct-id" id="acctIdRow"><span class="hint" data-i18n="acct_id">User ID</span><code id="acctId"></code><button type="button" class="btn" id="acctCopy" data-i18n="acct_copy">Copy ID</button></div>
+      <div class="form-foot"><button type="button" class="btn" id="acctOut" data-i18n="acct_signout">Log out</button></div>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="sheet narrow" id="settingsDlg" aria-labelledby="setTitle">
+  <form id="settingsForm" novalidate>
+    <div class="sheet-head"><h2 id="setTitle" data-i18n="settings">Page settings</h2><button type="button" class="x" data-close aria-label="Close">×</button></div>
+    <div class="sheet-body form">
+      <div class="field">
+        <label for="setIg" data-i18n="admin_ig">Admin Instagram</label>
+        <div class="igwrap"><span aria-hidden="true">@</span><input class="input" id="setIg" maxlength="60" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="your.name"></div>
+        <p class="hint" data-i18n="admin_hint">Shown to people who can browse but can't post, so they can ask you to list their book.</p>
+      </div>
+      <p class="ferr" id="setErr" role="alert"></p>
+      <div class="form-foot">
+        <button type="button" class="btn" data-close data-i18n="cancel">Cancel</button>
+        <button type="submit" class="btn btn-dark" id="setSave" data-i18n="save">Save</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<!-- Apparel form (owner only) -->
+<dialog class="sheet narrow" id="apDlg" aria-labelledby="apFormTitle">
+  <form id="apForm" novalidate>
+    <div class="sheet-head"><h2 id="apFormTitle">Add item</h2><button type="button" class="x" data-close aria-label="Close">×</button></div>
+    <div class="sheet-body form">
+      <div class="field">
+        <span class="lbl" data-i18n="ap_poster">Cover poster</span>
+        <label class="pick" id="apPick" for="apPoster">
+          <span class="pv poster" id="apPv"></span>
+          <span><strong id="apPickText">Tap to add the poster</strong><span class="hint" data-i18n="ap_pick_hint">A portrait poster works best.</span></span>
+        </label>
+        <input class="vh" type="file" id="apPoster" accept="image/*">
+      </div>
+      <div class="field"><label for="apName" data-i18n="ap_name">Item name</label><input class="input" id="apName" maxlength="80" autocomplete="off" data-i18n-ph="ap_name_ph"></div>
+      <div class="field"><label for="apCatSel" data-i18n="ap_cat">Category</label><select class="input sel" id="apCatSel"></select></div>
+      <div class="two">
+        <div class="field"><label for="apPrice" data-i18n="ap_price">Price (baht, optional)</label><input class="input" id="apPrice" type="number" inputmode="numeric" min="0" max="99999" step="1"></div>
+        <div class="field"><label for="apSizes" data-i18n="ap_sizes">Sizes (optional)</label><input class="input" id="apSizes" maxlength="60" autocomplete="off" data-i18n-ph="ap_sizes_ph"></div>
+      </div>
+      <div class="field">
+        <label for="apUrl" data-i18n="ap_form">Google Form link</label>
+        <input class="input" id="apUrl" type="url" inputmode="url" maxlength="500" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://forms.gle/…">
+        <p class="hint" data-i18n="ap_form_hint">Starts with https://forms.gle/ or https://docs.google.com/forms/</p>
+      </div>
+      <div class="two">
+        <div class="field"><label for="apOpens" data-i18n="ap_opens">Pre-order opens</label><input class="input" id="apOpens" type="datetime-local"></div>
+        <div class="field"><label for="apCloses" data-i18n="ap_closes">Pre-order closes</label><input class="input" id="apCloses" type="datetime-local"></div>
+      </div>
+      <div class="field"><label for="apDetails" data-i18n="ap_details">Details (optional)</label><textarea class="input" id="apDetails" maxlength="600" data-i18n-ph="ap_details_ph"></textarea></div>
+      <div class="form-foot">
+        <p class="ferr" id="apErr" role="alert"></p>
+        <button type="button" class="btn" data-close data-i18n="cancel">Cancel</button>
+        <button type="submit" class="btn btn-dark" id="apSave" data-i18n="save">Save</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<!-- Photo viewer -->
+<dialog class="viewer" id="viewerDlg" aria-label="Photos">
+  <div class="v-top"><span class="v-count" id="vCount"></span><button type="button" class="x" data-close aria-label="Close">×</button></div>
+  <div class="v-stage" id="vStage"><img id="vImg" alt=""></div>
+  <div class="v-nav"><button type="button" id="vPrev" data-i18n-aria="prev" aria-label="Previous photo">‹</button><button type="button" id="vNext" data-i18n-aria="next" aria-label="Next photo">›</button></div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   FIREBASE SETTINGS
+   Paste the firebaseConfig values from:
+   Firebase console > Project settings > General > Your apps > Web app
+   ===================================================================== */
+window.PCSHSSK_FIREBASE = {
+  apiKey: "AIzaSyABUe6nomKcD_Ch4ZYMncENCKLDR04WDKE",
+  authDomain: "pcshssk-books.firebaseapp.com",
+  projectId: "pcshssk-books",
+  storageBucket: "pcshssk-books.firebasestorage.app",
+  messagingSenderId: "513633874624",
+  appId: "1:513633874624:web:2079629e91cec2bb8a3325",
+  measurementId: "G-5MMC91DVLL"
+};
+</script>
+<script>
+/* Connects the page to Firebase: Firestore database, automatic visitor accounts, admin password login. */
+(() => {
+  const SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';
+  let done; const ready = new Promise(r => { done = r; });
+  window.claude = { use: async name => { const api = await ready; return api && api[name] ? api[name] : null; } };
+  const auth = { state: 'loading', uid: '', name: '', isAnon: true, isAdmin: false, signIn: async () => {}, signOut: async () => {} };
+  window.PCSHSSK_AUTH = auth;
+  const cfg = window.PCSHSSK_FIREBASE || {};
+  if (!cfg.apiKey || !cfg.projectId) { window.PCSHSSK_FB_STATE = 'setup'; done(null); return; }
+  (async () => {
+    let A, U, F;
+    try {
+      if (window.__FB_FAKE) [A, U, F] = window.__FB_FAKE;
+      else [A, U, F] = await Promise.all([import(SDK + 'firebase-app.js'), import(SDK + 'firebase-auth.js'), import(SDK + 'firebase-firestore.js')]);
+    } catch (e) { console.error('Firebase failed to load', e); window.PCSHSSK_FB_STATE = 'error'; done(null); return; }
+    try {
+      const app = A.initializeApp(cfg);
+      let fs;
+      try { fs = F.initializeFirestore(app, { ignoreUndefinedProperties: true }); } catch { fs = F.getFirestore(app); }
+      let au;
+      try { au = U.initializeAuth(app, { persistence: [U.indexedDBLocalPersistence, U.browserLocalPersistence, U.inMemoryPersistence] }); }
+      catch { au = U.getAuth(app); }
+      const user = await new Promise(res => {
+        let tried = false, off = null;
+        off = U.onAuthStateChanged(au, async u => {
+          if (u) { if (off) off(); res(u); return; }
+          if (tried) return;
+          tried = true;
+          try { await U.signInAnonymously(au); } catch (e) { console.error('Anonymous sign-in failed', e); if (off) off(); res(null); }
+        });
+      });
+      let isAdmin = false;
+      if (user) { try { const s = await F.getDoc(F.doc(fs, 'admins/' + user.uid)); isAdmin = s.exists(); } catch {} }
+      Object.assign(auth, {
+        state: user ? 'ok' : 'none', uid: user ? user.uid : '', isAnon: !user || !!user.isAnonymous, isAdmin,
+        name: user && !user.isAnonymous ? String(user.email || '').split('@')[0] : ''
+      });
+      auth.signIn = async (username, password) => {
+        const u = String(username || '').trim();
+        const email = u.includes('@') ? u : u + '@' + (cfg.authDomain || (cfg.projectId + '.firebaseapp.com'));
+        await U.signInWithEmailAndPassword(au, email, password);
+        location.reload();
+        return true;
+      };
+      auth.signOut = async () => { await U.signOut(au); location.reload(); };
+
+      const wrapDoc = s => ({ id: s.id, exists: s.exists(), data: () => s.data(), metadata: { fromCache: !!(s.metadata && s.metadata.fromCache), hasPendingWrites: !!(s.metadata && s.metadata.hasPendingWrites) } });
+      const wrapQ = q => { const docs = q.docs.map(wrapDoc); return { docs, size: docs.length, empty: !docs.length, metadata: { fromCache: !!(q.metadata && q.metadata.fromCache), hasPendingWrites: false }, docChanges: () => [] }; };
+      const CODES = { 'permission-denied': 'not_granted', 'unauthenticated': 'not_granted', 'resource-exhausted': 'resource_exhausted', 'unavailable': 'unavailable', 'deadline-exceeded': 'unavailable', 'invalid-argument': 'invalid_argument' };
+      const mapErr = e => { const msg = (e && e.message) || 'error'; const err = new Error(msg); err.code = /maximum allowed size|longer than/i.test(msg) ? 'too_large' : (CODES[e && e.code] || 'unknown'); return err; };
+      const wrapP = p => p.catch(e => { throw mapErr(e); });
+      const mkDoc = path => {
+        const ref = () => F.doc(fs, path);
+        return {
+          get: () => wrapP(F.getDoc(ref())).then(wrapDoc),
+          set: d => wrapP(F.setDoc(ref(), d)),
+          update: d => wrapP(F.updateDoc(ref(), d)),
+          delete: () => wrapP(F.deleteDoc(ref())),
+          onSnapshot: (next, err) => F.onSnapshot(ref(), s => next(wrapDoc(s)), e => { if (err) err(mapErr(e)); })
+        };
+      };
+      const mkQuery = (path, cons) => {
+        const build = () => {
+          const c = F.collection(fs, path);
+          const parts = cons.map(x => x[0] === 'w' ? F.where(x[1], x[2], x[3]) : x[0] === 'o' ? F.orderBy(x[1], x[2] || 'asc') : F.limit(x[1]));
+          return parts.length ? F.query(c, ...parts) : c;
+        };
+        return {
+          where: (f, op, v) => mkQuery(path, cons.concat([['w', f, op, v]])),
+          orderBy: (f, dir) => mkQuery(path, cons.concat([['o', f, dir]])),
+          limit: n => mkQuery(path, cons.concat([['l', n]])),
+          doc: id => mkDoc(path + '/' + id),
+          get: () => wrapP(F.getDocs(build())).then(wrapQ),
+          onSnapshot: (next, err) => F.onSnapshot(build(), s => next(wrapQ(s)), e => { if (err) err(mapErr(e)); })
+        };
+      };
+      const db = Object.freeze({ collection: p => mkQuery(p, []), doc: p => mkDoc(p) });
+      const usr = Object.freeze({
+        id: async () => user ? user.uid : null,
+        me: async () => ({ id: user ? user.uid : null }),
+        isOwner: async () => isAdmin,
+        canEdit: async () => isAdmin,
+        can: async n => n === 'data.write' ? !!user : null,
+        profiles: async ids => {
+          const out = {};
+          await Promise.all((ids || []).map(async id => {
+            let name = '';
+            try { const s = await F.getDoc(F.doc(fs, 'profiles/' + id)); if (s.exists()) name = String((s.data() || {}).name || ''); } catch {}
+            out[id] = { name };
+          }));
+          return out;
+        }
+      });
+      window.PCSHSSK_FB_STATE = 'ok';
+      done({ db, user: usr });
+    } catch (e) { console.error('Firebase setup failed', e); window.PCSHSSK_FB_STATE = 'error'; done(null); }
+  })();
+})();
+</script>
+<script>
+(() => {
+'use strict';
+
+/* ---------- vocab ---------- */
+const SUBJECTS = ['math','physics','chem','bio','earth','computer','english','thai','social','olympiad','tcas','novel','comics','other'];
+const GRADES = ['m1','m2','m3','m4','m5','m6','any'];
+const CONDS = ['new','good','fair','worn'];
+const TYPES = ['sell','swap','both','give','lend'];
+const STATUSES = ['available','reserved','lent','done'];
+const MAX_PHOTOS = 4;
+const CAM = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="5" width="16" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="10" cy="11" r="3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M7 5l1.5-2h3L13 5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>';
+const HUE = {math:222, physics:258, chem:168, bio:128, earth:32, computer:196, english:352, thai:284, social:14, olympiad:44, tcas:328, novel:300, comics:6, other:210};
+
+const L = {
+en: {
+  eyebrow:'Run by students, for students',
+  headline:'PCSHSSK <mark>BOOK</mark> EXCHANGE/<wbr>BORROW/<wbr>STORE',
+  lede:'A platform for PCSHSSK students to buy, sell, exchange, lend and pass on textbooks, exam-preparation books, olympiad (POSN) materials and general reading. Upload a photo of the cover, choose how the book will be passed on, and contact interested students through on-site messaging or Instagram.',
+  post:'Post a book', st_total:'on the shelf', st_sell:'for sale', st_swap:'to swap', st_give:'free',
+  how:'How it works', h1t:'Snap the cover', h1d:'The front, plus inside pages if you like.', h2t:'Sell, swap, lend or give', h2d:'Add a price, a swap, a loan period, or give it away.', h3t:'Chat here or on Instagram', h3d:'Meet at school to hand it over.',
+  search_lbl:'Search books', search_ph:'Search title, author, subject or @ig',
+  all:'All', f_sell:'For sale', f_swap:'To swap', f_give:'Free', subject:'Subject', grade:'Grade', sort:'Sort',
+  all_subjects:'All subjects', all_grades:'All grades', sort_new:'Newest first', sort_cheap:'Lowest price', sort_popular:'Most interested',
+  like_aria:'Press if interested. {n} people interested', like_on_aria:'You\u2019re interested. {n} people interested', like_own_aria:'{n} people interested in your book', like_ro:'Can’t connect right now. Refresh the page and try again.', own_lbl:'Interested',
+  mine:'My listings', show_done:'Show taken books', clear:'Clear filters',
+  count:'{n} books', count1:'1 book', count0:'No books match',
+  foot:'Run by PCSHSSK students. Each listing is posted by the book’s owner.', settings:'Page settings',
+  s_math:'Math', s_physics:'Physics', s_chem:'Chemistry', s_bio:'Biology', s_earth:'Earth & space', s_computer:'Computer', s_english:'English', s_thai:'Thai', s_social:'Social studies', s_olympiad:'Olympiad (POSN)', s_tcas:'TCAS prep', s_novel:'Novels', s_comics:'Comics & manga', s_other:'Other',
+  g_m1:'M.1', g_m2:'M.2', g_m3:'M.3', g_m4:'M.4', g_m5:'M.5', g_m6:'M.6', g_any:'Any grade',
+  c_new:'Like new', c_good:'Good', c_fair:'Used', c_worn:'Well-loved',
+  t_sell:'Sell', t_swap:'Swap', t_both:'Sell or swap', t_give:'Pass on free',
+  stamp_sell:'For sale', stamp_swap:'Swap', stamp_give:'Free', or_swap:'or swap', free:'Free',
+  price_swap:'Swap only', price_both:'{p} or swap', price_give:'Free to a good home',
+  st_available:'Available', st_reserved:'Reserved', st_done:'Taken',
+  bn_browse:'Browse books', bn_free_eyebrow:'Free & to borrow', bn_free_title:'Free books and books to borrow', bn_free_sub:'{g} free and {l} to borrow right now. Press \u2665 to join the queue.',
+  bn_see_free:'See free books', bn_see_lend:'See books to borrow', bn_store_eyebrow:'School apparel \u00b7 pre-order', bn_go_store:'Go to the store', bn_details:'See details',
+  bn_prev:'Previous slide', bn_next:'Next slide', bn_slide:'Slide {i} of {n}', ap_bn_title:'PCSHSSK <mark>STORE</mark>',
+  cat_all:'All', cat_uniform:'Uniform shirts', cat_sport:'Sports day', cat_jacket:'Jackets & hoodies', cat_class:'Class shirts', cat_bottoms:'Pants & shorts', cat_accessory:'Accessories', cat_other:'Other', ap_cat:'Category',
+  qk_open:'Open now', qkb_open:'Order today', qk_closing:'Closing soon', qkb_closing:'Ends within 48 hours', qk_soon:'Coming soon', qkb_soon:'Opens later', qk_budget:'Under \u0e3f300', qkb_budget:'Easy on the wallet', shop_now:'Shop now',
+  ap_by_cat:'Shop by category', ap_all_items:'All items', ap_n:'{n} items', ap_none_match:'Nothing here right now.',
+  g_mock:'3D', g_flat:'Cover', ap_edit:'Edit shop', ap_edit_on:'Done editing', ap_edit_done:'Done', ap_edit_note:'You\u2019re editing the shop. Only you can see Add item, Edit and Delete. Students see the shop without them.', ap_empty_owner_off:'No items yet. Tap \u201cEdit shop\u201d to add one.',
+  tab_books:'Books', tab_apparel:'School apparel', ap_eyebrow:'PCSHSSK · Pre-order', ap_title:'School apparel',
+  ap_lede:'School shirts, jackets and sports-day gear. Each item opens for pre-order during its own dates, and you order through its Google Form.',
+  ap_add:'Add item', ap_form_new:'Add item', ap_form_edit:'Edit item', ap_poster:'Cover poster', ap_pick:'Tap to add the poster', ap_pick_change:'Tap to change the poster', ap_pick_hint:'A portrait poster works best.',
+  ap_name:'Item name', ap_name_ph:'e.g. Sports day shirt 2026', ap_price:'Price (baht, optional)', ap_sizes:'Sizes (optional)', ap_sizes_ph:'e.g. S\u20133XL',
+  ap_form:'Google Form link', ap_form_hint:'Starts with https://forms.gle/ or https://docs.google.com/forms/', ap_opens:'Pre-order opens', ap_closes:'Pre-order closes', ap_details:'Details (optional)', ap_details_ph:'Colours, fabric, pickup day\u2026',
+  ap_open:'Pre-order open', ap_soon:'Opening soon', ap_closed:'Closed', ap_order:'Order via Google Form', ap_not_open:'Pre-order hasn\u2019t opened yet', ap_ended:'Pre-order has ended',
+  ap_window:'Pre-order {a} \u2013 {b}', opens_in:'Opens in {t}', closes_in:'Closes in {t}', closed_on:'Closed {d}', dur_dh:'{d}d {h}h', dur_hm:'{h}h {m}m', dur_ms:'{m}m {s}s',
+  ap_sizes_lbl:'Sizes {s}', ap_view:'View poster', ap_empty_owner:'No items yet. Tap \u201cAdd item\u201d to post a poster, its Google Form link and the pre-order dates.', ap_empty:'No pre-orders right now. Check back soon.', ap_example_name:'Sports day shirt',
+  e_ap_poster:'Add the poster.', e_ap_name:'Add the item name.', e_ap_form:'Paste a Google Form link (forms.gle or docs.google.com/forms).', e_ap_time:'Set when pre-order opens and closes. Closing must be after opening.', e_ap_price:'Enter a price from 0 to 99,999 baht, or leave it empty.',
+  ap_saved:'Item saved.', ap_deleted:'Item deleted.',
+  t_lend:'Lend', f_lend:'To borrow', st_lend:'to borrow', stamp_lend:'Lend · {n}d', price_lend:'Lend for {n} days', lend_days:'Lend for how many days?', lend_hint:'Mark it \u201cOn loan\u201d when you hand it over and the return date is counted from then.', e_days:'Enter 1 to 180 days.', st_lent:'On loan', st_l_available:'Available', st_l_done:'Closed', due:'back {d}', overdue:'Overdue', f_due:'Due back', hello_lend:'Hi! Could I borrow \u201c{title}\u201d from the PCSHSSK Book Exchange?', q_borrow:'Could I borrow it?',
+  yours:'Yours', example:'Example', examples:'How a listing looks',
+  empty_t:'The shelf is empty', empty_d:'Post the first book: snap the cover, then sell, swap, lend or give it away, and add your Instagram.',
+  empty_ro:'No books yet. Check back soon.',
+  nomatch_t:'Nothing matches', nomatch_d:'Try another subject or grade, or clear the search.',
+  detail_head:'Book', wants_h:'Wants in exchange', details_h:'Details', open_offers:'Open to offers',
+  f_subject:'Subject', f_grade:'Grade', f_cond:'Condition', f_notes:'Notes inside', f_posted:'Posted', yes:'Yes', no:'No',
+  dm:'Message @{ig} on Instagram', profile:'View profile', copy:'Copy', copied:'Copied', copy_ig:'Copy @{ig}',
+  hello:'Hi! I saw your book “{title}” on the PCSHSSK Book Exchange. Is it still available?',
+  hello_give:'Hi! I saw you’re passing on “{title}” on the PCSHSSK Book Exchange. Could I have it?',
+  tip:'Meet at school to hand over books, and check the book before you pay.', no_ig:'No Instagram added. Use the chat below.',
+  manage_own:'Your listing', manage_admin:'Admin tools', edit:'Edit', delete:'Delete', delete_confirm:'Tap again to delete',
+  form_new:'Post a book', form_edit:'Edit listing', cover:'Cover photo', pick:'Tap to add a photo of the cover', pick_change:'Tap to change the photo', pick_busy:'Preparing photo…', pick_hint:'Front cover, good light, whole book in the frame.',
+  title:'Book title', title_ph:'e.g. Physics M.5 Book 1', author:'Author or publisher (optional)',
+  choose:'Choose…', condition:'Condition', has_notes:'Has notes or highlights inside', type:'I want to',
+  chat_btn:'Chat', interested:'I\u2019m interested', interested_on:'Interested', queue:'Interested ({n}):', queue_none_own:'No one has pressed interested yet.',
+  chat_h:'Chat', chat_public:'Everyone who can open this page sees these messages, so keep phone numbers and addresses out.', chat_none:'No messages yet. Ask the poster anything.', chat_none_own:'No messages yet. Questions about this book show up here.',
+  chat_ph:'Write a message\u2026', send:'Send', chat_ro:'Chat isn’t available right now. Refresh the page, or message the poster on Instagram.',
+  poster:'Poster', you:'You', someone:'Someone', delete_q:'Delete?',
+  q_avail:'Is it still available?', q_meet:'Where can we meet at school?', q_price:'Could you lower the price a bit?', q_swap:'I could swap you: ', q_give:'Could I have it?', qp_here:'Still available!', qp_meet:'We can meet at school.',
+  interest_added:'Marked as interested. The poster sees you in the queue.', new_n:'{n} new', n_interested:'{n} interested', n_msgs:'{n} messages',
+  act_title:'Updates:', acct_login:'Admin', acct_title:'Admin login', acct_user_lbl:'Username', acct_pass_lbl:'Password', acct_btn:'Log in', acct_signed:'Logged in as {name}.', acct_admin:'Admin: you can post, edit and delete books and edit the shop.', acct_notadmin:'This account isn’t an admin yet. Add its user ID to the admins list in Firebase.', acct_id:'User ID', acct_copy:'Copy ID', acct_copied:'User ID copied.', acct_signout:'Log out', acct_err:'Login didn’t work. Please try again.', acct_err_bad:'Wrong username or password.', acct_err_many:'Too many tries. Wait a few minutes and try again.', acct_err_off:'Password login isn’t turned on in Firebase yet.', acct_admin_short:'Admin', nodel:'', act_msgs:'{n} new messages', act_int:'{n} interested', act_more:'+{n} more', act_avail:'available again',
+  av_confirm:'✓ Still available', av_confirmed_today:'✓ Confirmed today', av_reserve:'Reserved', av_lent:'Lent out', av_back:'↺ Available again', av_confirm_btn:'Confirm still available',
+  conf_fresh:'✓ Confirmed available {ago}', conf_stale:'Not confirmed for {n} days', f_confirmed:'Last confirmed', chip_avail:'Available again',
+  toast_avail_back:'“{title}” is available again', toast_marked_avail:'Marked available. Students who pressed ♥ ({n}) will get an alert.', toast_confirmed:'Thanks! Marked as still available.', av_hint:'Your book, one click:',
+  give_note:'No price, no swap. Someone who needs it messages you and you hand it over.',
+  photos:'More photos (optional)', photos_hint:'Inside pages, notes, any damage. Up to 4.', add_photo:'Add photo', remove_photo:'Remove photo', photos_max:'You can add up to 4 extra photos.', photos_wait:'Photos are still loading. Wait a moment, then save.', saving_photos:'Saving photos {i}/{n}…', photo_n:'Photo {n}', n_photos:'{n} more photos', enlarge:'Tap the photo to see it bigger', prev:'Previous photo', next:'Next photo', photos_loading:'Loading photos…',
+  price:'Price (baht)', price_hint:'Giving it away? Choose “Pass on free” above.', wants:'What would you swap it for? (optional)', wants_ph:'e.g. Chemistry M.5, any manga',
+  details:'More details (optional)', details_ph:'Edition, missing pages, where to meet…',
+  ig:'Your Instagram (optional)', ig_hint:'Leave it empty and people can still reach you in the chat on this page.',
+  submit_new:'Post book', submit_edit:'Save changes', saving:'Saving…', cancel:'Cancel', save:'Save',
+  e_cover:'Add a photo of the cover.', e_title:'Add the book title.', e_subject:'Choose a subject.', e_price:'Enter a price from 0 to 99,999 baht.', e_ig:'Enter your Instagram username, like @your.name.',
+  e_photo:'Couldn’t read that photo. Try a JPG or PNG, or take a screenshot of it and upload that.',
+  err_noperm:'You don’t have permission to do that.',
+  err_quota:'The shelf is full. Ask the page owner to remove old listings.', err_busy:'Too many changes at once. Wait a few seconds and try again.', err_generic:'Couldn’t save. Check your connection and try again.',
+  n_off:'Listings can’t load right now. Check your internet connection and refresh the page.', n_setup:'The database isn’t connected yet. The site owner needs to add the Firebase settings to this page.',
+  n_ro:'Browse books, press ♥ and chat with sellers. Books are posted by the site admin.',
+  n_ro_admin:'Want to list a book? DM {ig} on Instagram and they’ll post it for you.',
+  n_slow:'Can’t reach the listings yet. They’ll appear when the connection is back.',
+  n_err:'Listings stopped updating. Reload the page to see the latest.',
+  owner_tip:'You’re logged in as admin. Only admins can post, edit and delete books; students can browse, press ♥ and chat. Add your Instagram in Page settings so students can ask you to list their books.',
+  dismiss:'Got it', posted:'Your book is on the shelf.', saved:'Changes saved.', deleted:'Listing deleted.', status_set:'Status updated.', loading:'Still loading the shelf. Try again in a moment.', settings_saved:'Settings saved.',
+  admin_ig:'Admin Instagram', admin_hint:'Shown on the site so students can ask you to list their books.', just_now:'just now'
+},
+th: {
+  eyebrow:'โดยนักเรียน เพื่อนักเรียน',
+  headline:'PCSHSSK <mark>BOOK</mark> EXCHANGE/<wbr>BORROW/<wbr>STORE',
+  lede:'แพลตฟอร์มสำหรับนักเรียน PCSHSSK ในการซื้อขาย แลกเปลี่ยน ให้ยืม และส่งต่อหนังสือเรียน หนังสือเตรียมสอบ หนังสือ สอวน. และหนังสือทั่วไป ผู้ลงประกาศสามารถอัปโหลดภาพปก กำหนดรูปแบบการส่งต่อ และติดต่อผู้สนใจผ่านระบบข้อความของเว็บไซต์หรือ Instagram',
+  post:'ลงประกาศหนังสือ', st_total:'เล่มบนชั้น', st_sell:'ขาย', st_swap:'แลก', st_give:'ส่งต่อฟรี',
+  how:'วิธีใช้', h1t:'ถ่ายรูปปก', h1d:'รูปหน้าปก และหน้าด้านในถ้ามี', h2t:'เลือกขาย แลก ให้ยืม หรือส่งต่อ', h2d:'ใส่ราคา สิ่งที่อยากแลก จำนวนวันให้ยืม หรือส่งต่อให้ฟรี', h3t:'คุยในเว็บหรือทางไอจี', h3d:'นัดรับหนังสือกันที่โรงเรียน',
+  search_lbl:'ค้นหาหนังสือ', search_ph:'ค้นหาชื่อหนังสือ ผู้แต่ง วิชา หรือไอจี',
+  all:'ทั้งหมด', f_sell:'ขาย', f_swap:'แลก', f_give:'ส่งต่อฟรี', subject:'วิชา', grade:'ระดับชั้น', sort:'เรียงตาม',
+  all_subjects:'ทุกวิชา', all_grades:'ทุกระดับชั้น', sort_new:'ใหม่ล่าสุด', sort_cheap:'ราคาต่ำสุด', sort_popular:'คนสนใจมากสุด',
+  like_aria:'กดสนใจ มีคนสนใจ {n} คน', like_on_aria:'คุณกดสนใจแล้ว มีคนสนใจ {n} คน', like_own_aria:'มีคนสนใจหนังสือของคุณ {n} คน', like_ro:'เชื่อมต่อไม่ได้ในตอนนี้ ลองรีเฟรชหน้าอีกครั้ง', own_lbl:'คนสนใจ',
+  mine:'ประกาศของฉัน', show_done:'แสดงเล่มที่มีเจ้าของแล้ว', clear:'ล้างตัวกรอง',
+  count:'{n} เล่ม', count1:'1 เล่ม', count0:'ไม่พบหนังสือ',
+  foot:'ดูแลโดยนักเรียน PCSHSSK ประกาศแต่ละเล่มลงโดยเจ้าของหนังสือเอง', settings:'ตั้งค่าหน้า',
+  s_math:'คณิตศาสตร์', s_physics:'ฟิสิกส์', s_chem:'เคมี', s_bio:'ชีววิทยา', s_earth:'โลกและอวกาศ', s_computer:'คอมพิวเตอร์', s_english:'ภาษาอังกฤษ', s_thai:'ภาษาไทย', s_social:'สังคมศึกษา', s_olympiad:'สอวน. / โอลิมปิก', s_tcas:'เตรียมสอบ TCAS', s_novel:'นิยาย / วรรณกรรม', s_comics:'การ์ตูน / มังงะ', s_other:'อื่น ๆ',
+  g_m1:'ม.1', g_m2:'ม.2', g_m3:'ม.3', g_m4:'ม.4', g_m5:'ม.5', g_m6:'ม.6', g_any:'ทุกชั้น',
+  c_new:'เหมือนใหม่', c_good:'สภาพดี', c_fair:'มีร่องรอยใช้งาน', c_worn:'ผ่านการใช้งานมาก',
+  t_sell:'ขาย', t_swap:'แลก', t_both:'ขายหรือแลกก็ได้', t_give:'ส่งต่อฟรี',
+  stamp_sell:'ขาย', stamp_swap:'แลก', stamp_give:'ส่งต่อฟรี', or_swap:'หรือแลก', free:'ให้ฟรี',
+  price_swap:'แลกเท่านั้น', price_both:'{p} หรือแลก', price_give:'ส่งต่อให้ฟรี',
+  st_available:'ยังอยู่', st_reserved:'ติดจอง', st_done:'มีเจ้าของแล้ว',
+  bn_browse:'ดูหนังสือทั้งหมด', bn_free_eyebrow:'ส่งต่อฟรี & ให้ยืม', bn_free_title:'หนังสือส่งต่อฟรี และหนังสือให้ยืม', bn_free_sub:'ตอนนี้มีส่งต่อฟรี {g} เล่ม ยืมได้ {l} เล่ม กด \u2665 เพื่อต่อคิว',
+  bn_see_free:'ดูเล่มที่ส่งต่อฟรี', bn_see_lend:'ดูเล่มที่ยืมได้', bn_store_eyebrow:'เสื้อผ้าโรงเรียน \u00b7 พรีออเดอร์', bn_go_store:'ไปที่ร้าน', bn_details:'ดูรายละเอียด',
+  bn_prev:'สไลด์ก่อนหน้า', bn_next:'สไลด์ถัดไป', bn_slide:'สไลด์ {i} จาก {n}', ap_bn_title:'PCSHSSK <mark>STORE</mark>',
+  cat_all:'ทั้งหมด', cat_uniform:'เสื้อนักเรียน', cat_sport:'เสื้อกีฬาสี', cat_jacket:'แจ็กเก็ต & ฮู้ด', cat_class:'เสื้อรุ่น', cat_bottoms:'กางเกง', cat_accessory:'ของที่ระลึก', cat_other:'อื่น ๆ', ap_cat:'หมวดหมู่',
+  qk_open:'เปิดอยู่ตอนนี้', qkb_open:'สั่งได้เลย', qk_closing:'ใกล้ปิดแล้ว', qkb_closing:'ปิดภายใน 48 ชม.', qk_soon:'เร็ว ๆ นี้', qkb_soon:'รอเปิดพรีออเดอร์', qk_budget:'ไม่เกิน \u0e3f300', qkb_budget:'ราคาสบายกระเป๋า', shop_now:'ดูเลย',
+  ap_by_cat:'เลือกตามหมวด', ap_all_items:'สินค้าทั้งหมด', ap_n:'{n} รายการ', ap_none_match:'ยังไม่มีสินค้าในหมวดนี้',
+  g_mock:'3 มิติ', g_flat:'ปกจริง', ap_edit:'แก้ไขร้าน', ap_edit_on:'เสร็จสิ้นการแก้ไข', ap_edit_done:'เสร็จแล้ว', ap_edit_note:'กำลังแก้ไขร้าน ปุ่มเพิ่ม แก้ไข และลบสินค้าเห็นได้เฉพาะคุณ นักเรียนคนอื่นจะเห็นร้านแบบไม่มีปุ่มเหล่านี้', ap_empty_owner_off:'ยังไม่มีสินค้า กด \u201cแก้ไขร้าน\u201d เพื่อเพิ่มสินค้า',
+  tab_books:'หนังสือ', tab_apparel:'เสื้อผ้าโรงเรียน', ap_eyebrow:'PCSHSSK · พรีออเดอร์', ap_title:'เสื้อผ้าโรงเรียน',
+  ap_lede:'เสื้อโรงเรียน แจ็กเก็ต และเสื้อกีฬาสี แต่ละรายการเปิดพรีออเดอร์ตามช่วงเวลาของตัวเอง สั่งซื้อผ่าน Google Form ของรายการนั้น',
+  ap_add:'เพิ่มสินค้า', ap_form_new:'เพิ่มสินค้า', ap_form_edit:'แก้ไขสินค้า', ap_poster:'โปสเตอร์', ap_pick:'แตะเพื่อเพิ่มโปสเตอร์', ap_pick_change:'แตะเพื่อเปลี่ยนโปสเตอร์', ap_pick_hint:'โปสเตอร์แนวตั้งจะแสดงได้สวยที่สุด',
+  ap_name:'ชื่อสินค้า', ap_name_ph:'เช่น เสื้อกีฬาสี 2569', ap_price:'ราคา (บาท ไม่บังคับ)', ap_sizes:'ไซซ์ (ไม่บังคับ)', ap_sizes_ph:'เช่น S\u20133XL',
+  ap_form:'ลิงก์ Google Form', ap_form_hint:'ขึ้นต้นด้วย https://forms.gle/ หรือ https://docs.google.com/forms/', ap_opens:'เปิดพรีออเดอร์', ap_closes:'ปิดพรีออเดอร์', ap_details:'รายละเอียด (ไม่บังคับ)', ap_details_ph:'สี เนื้อผ้า วันรับของ\u2026',
+  ap_open:'เปิดพรีออเดอร์', ap_soon:'เร็ว ๆ นี้', ap_closed:'ปิดแล้ว', ap_order:'สั่งซื้อผ่าน Google Form', ap_not_open:'ยังไม่เปิดพรีออเดอร์', ap_ended:'ปิดรับพรีออเดอร์แล้ว',
+  ap_window:'พรีออเดอร์ {a} \u2013 {b}', opens_in:'เปิดในอีก {t}', closes_in:'ปิดในอีก {t}', closed_on:'ปิดไปเมื่อ {d}', dur_dh:'{d} วัน {h} ชม.', dur_hm:'{h} ชม. {m} นาที', dur_ms:'{m} นาที {s} วินาที',
+  ap_sizes_lbl:'ไซซ์ {s}', ap_view:'ดูโปสเตอร์', ap_empty_owner:'ยังไม่มีสินค้า กด \u201cเพิ่มสินค้า\u201d แล้วใส่โปสเตอร์ ลิงก์ Google Form และช่วงเวลาพรีออเดอร์', ap_empty:'ตอนนี้ยังไม่มีพรีออเดอร์ แวะมาดูใหม่นะ', ap_example_name:'เสื้อกีฬาสี',
+  e_ap_poster:'กรุณาเพิ่มโปสเตอร์', e_ap_name:'กรุณาใส่ชื่อสินค้า', e_ap_form:'วางลิงก์ Google Form (forms.gle หรือ docs.google.com/forms)', e_ap_time:'ตั้งเวลาเปิดและปิดพรีออเดอร์ เวลาปิดต้องหลังเวลาเปิด', e_ap_price:'ใส่ราคา 0 ถึง 99,999 บาท หรือเว้นว่างไว้',
+  ap_saved:'บันทึกสินค้าแล้ว', ap_deleted:'ลบสินค้าแล้ว',
+  t_lend:'ให้ยืม', f_lend:'ยืมได้', st_lend:'ยืมได้', stamp_lend:'ให้ยืม {n} วัน', price_lend:'ให้ยืม {n} วัน', lend_days:'ให้ยืมกี่วัน', lend_hint:'กด \u201cถูกยืมอยู่\u201d ตอนส่งหนังสือให้คนยืม ระบบจะนับวันคืนจากตอนนั้น', e_days:'ใส่ 1 ถึง 180 วัน', st_lent:'ถูกยืมอยู่', st_l_available:'ว่างให้ยืม', st_l_done:'ปิดประกาศ', due:'คืน {d}', overdue:'เลยกำหนดคืน', f_due:'กำหนดคืน', hello_lend:'สวัสดี ขอยืมหนังสือ \u201c{title}\u201d จากเว็บแลก-ขายหนังสือ PCSHSSK ได้ไหม', q_borrow:'ขอยืมได้ไหม?',
+  yours:'ของคุณ', example:'ตัวอย่าง', examples:'ตัวอย่างประกาศ',
+  empty_t:'ชั้นหนังสือยังว่าง', empty_d:'ลงประกาศเล่มแรกได้เลย ถ่ายรูปปก เลือกขาย แลก ให้ยืม หรือส่งต่อฟรี แล้วใส่ไอจีของคุณ',
+  empty_ro:'ยังไม่มีหนังสือ แวะมาดูใหม่เร็ว ๆ นี้',
+  nomatch_t:'ไม่พบหนังสือที่ตรงกัน', nomatch_d:'ลองเปลี่ยนวิชาหรือระดับชั้น หรือล้างคำค้นหา',
+  detail_head:'หนังสือ', wants_h:'อยากแลกกับ', details_h:'รายละเอียด', open_offers:'เปิดรับข้อเสนอ',
+  f_subject:'วิชา', f_grade:'ระดับชั้น', f_cond:'สภาพ', f_notes:'มีโน้ตข้างใน', f_posted:'ลงประกาศ', yes:'มี', no:'ไม่มี',
+  dm:'ทักไอจี @{ig}', profile:'ดูโปรไฟล์', copy:'คัดลอก', copied:'คัดลอกแล้ว', copy_ig:'คัดลอก @{ig}',
+  hello:'สวัสดี เห็นหนังสือ “{title}” ในเว็บแลก-ขายหนังสือ PCSHSSK ยังมีอยู่ไหม',
+  hello_give:'สวัสดี เห็นว่าจะส่งต่อหนังสือ “{title}” ในเว็บแลก-ขายหนังสือ PCSHSSK ขอรับต่อได้ไหม',
+  tip:'นัดรับหนังสือกันในโรงเรียน และเช็กสภาพหนังสือก่อนจ่ายเงิน', no_ig:'ไม่ได้ใส่ไอจี คุยผ่านช่องพูดคุยด้านล่างได้',
+  manage_own:'ประกาศของคุณ', manage_admin:'เครื่องมือผู้ดูแล', edit:'แก้ไข', delete:'ลบ', delete_confirm:'แตะอีกครั้งเพื่อลบ',
+  form_new:'ลงประกาศหนังสือ', form_edit:'แก้ไขประกาศ', cover:'รูปปก', pick:'แตะเพื่อเพิ่มรูปปกหนังสือ', pick_change:'แตะเพื่อเปลี่ยนรูป', pick_busy:'กำลังเตรียมรูป…', pick_hint:'ถ่ายหน้าปก แสงสว่าง ให้เห็นทั้งเล่ม',
+  title:'ชื่อหนังสือ', title_ph:'เช่น ฟิสิกส์ ม.5 เล่ม 1', author:'ผู้แต่งหรือสำนักพิมพ์ (ไม่บังคับ)',
+  choose:'เลือก…', condition:'สภาพ', has_notes:'มีจดโน้ตหรือไฮไลต์ข้างใน', type:'ต้องการ',
+  chat_btn:'พูดคุย', interested:'สนใจ', interested_on:'กดสนใจแล้ว', queue:'คนที่สนใจ ({n}):', queue_none_own:'ยังไม่มีคนกดสนใจ',
+  chat_h:'พูดคุย', chat_public:'ทุกคนที่เปิดหน้านี้เห็นข้อความได้ อย่าใส่เบอร์โทรหรือที่อยู่', chat_none:'ยังไม่มีข้อความ ถามคนลงประกาศได้เลย', chat_none_own:'ยังไม่มีข้อความ คำถามเกี่ยวกับเล่มนี้จะขึ้นที่นี่',
+  chat_ph:'พิมพ์ข้อความ\u2026', send:'ส่ง', chat_ro:'แชทใช้ไม่ได้ในตอนนี้ ลองรีเฟรชหน้า หรือทักคนลงประกาศทางไอจี',
+  poster:'ผู้ลงประกาศ', you:'คุณ', someone:'ผู้ใช้', delete_q:'ลบเลย?',
+  q_avail:'ยังมีอยู่ไหม?', q_meet:'นัดรับที่ไหนในโรงเรียนได้บ้าง?', q_price:'ลดราคาได้ไหม?', q_swap:'เรามีเล่มนี้มาแลก: ', q_give:'ขอรับต่อได้ไหม?', qp_here:'ยังอยู่นะ', qp_meet:'นัดรับที่โรงเรียนได้เลย',
+  interest_added:'กดสนใจแล้ว คนลงประกาศจะเห็นชื่อคุณในคิว', new_n:'ใหม่ {n}', n_interested:'สนใจ {n} คน', n_msgs:'{n} ข้อความ',
+  act_title:'มีความเคลื่อนไหวใหม่:', acct_login:'แอดมิน', acct_title:'เข้าสู่ระบบแอดมิน', acct_user_lbl:'ชื่อผู้ใช้', acct_pass_lbl:'รหัสผ่าน', acct_btn:'เข้าสู่ระบบ', acct_signed:'เข้าสู่ระบบเป็น {name}', acct_admin:'แอดมิน: ลงประกาศ แก้ไข ลบหนังสือ และแก้ไขร้านค้าได้', acct_notadmin:'บัญชีนี้ยังไม่ได้เป็นแอดมิน ให้เพิ่ม User ID ในรายชื่อ admins ใน Firebase', acct_id:'User ID', acct_copy:'คัดลอก ID', acct_copied:'คัดลอก User ID แล้ว', acct_signout:'ออกจากระบบ', acct_err:'เข้าสู่ระบบไม่สำเร็จ ลองอีกครั้ง', acct_err_bad:'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', acct_err_many:'ลองหลายครั้งเกินไป รอสักครู่แล้วลองใหม่', acct_err_off:'ยังไม่ได้เปิดการเข้าสู่ระบบด้วยรหัสผ่านใน Firebase', acct_admin_short:'แอดมิน', nodel:'', act_msgs:'ข้อความใหม่ {n}', act_int:'คนสนใจ {n}', act_more:'อีก {n} เล่ม', act_avail:'กลับมาว่างแล้ว',
+  av_confirm:'✓ ยังอยู่', av_confirmed_today:'✓ ยืนยันแล้ววันนี้', av_reserve:'ติดจอง', av_lent:'ให้ยืมแล้ว', av_back:'↺ กลับมาว่าง', av_confirm_btn:'ยืนยันว่ายังอยู่',
+  conf_fresh:'✓ ยืนยันว่ายังอยู่ {ago}', conf_stale:'ไม่ได้ยืนยันมา {n} วัน', f_confirmed:'ยืนยันล่าสุด', chip_avail:'ว่างแล้ว!',
+  toast_avail_back:'“{title}” กลับมาว่างแล้ว', toast_marked_avail:'ตั้งเป็นว่างแล้ว คนที่สนใจ {n} คนจะเห็นแจ้งเตือน', toast_confirmed:'ยืนยันแล้วว่าหนังสือยังอยู่', av_hint:'หนังสือของคุณ กดครั้งเดียว:',
+  give_note:'ไม่ต้องตั้งราคา ไม่ต้องแลก ใครอยากได้ก็ทักมา แล้วนัดรับหนังสือกัน',
+  photos:'รูปเพิ่มเติม (ไม่บังคับ)', photos_hint:'หน้าด้านใน รอยจดโน้ต หรือจุดที่ชำรุด สูงสุด 4 รูป', add_photo:'เพิ่มรูป', remove_photo:'ลบรูป', photos_max:'เพิ่มรูปได้สูงสุด 4 รูป', photos_wait:'รูปยังโหลดไม่เสร็จ รอสักครู่แล้วกดบันทึก', saving_photos:'กำลังบันทึกรูป {i}/{n}…', photo_n:'รูปที่ {n}', n_photos:'มีรูปเพิ่มอีก {n} รูป', enlarge:'แตะรูปเพื่อดูภาพใหญ่', prev:'รูปก่อนหน้า', next:'รูปถัดไป', photos_loading:'กำลังโหลดรูป…',
+  price:'ราคา (บาท)', price_hint:'ถ้าจะให้ฟรี เลือก “ส่งต่อฟรี” ด้านบน', wants:'อยากแลกกับอะไร (ไม่บังคับ)', wants_ph:'เช่น เคมี ม.5 หรือมังงะเล่มไหนก็ได้',
+  details:'รายละเอียดเพิ่มเติม (ไม่บังคับ)', details_ph:'ปีที่พิมพ์ หน้าที่ขาด จุดนัดรับ…',
+  ig:'ไอจีของคุณ (ไม่บังคับ)', ig_hint:'ถ้าไม่ใส่ คนที่สนใจยังคุยกับคุณผ่านช่องพูดคุยในหน้านี้ได้',
+  submit_new:'ลงประกาศ', submit_edit:'บันทึกการแก้ไข', saving:'กำลังบันทึก…', cancel:'ยกเลิก', save:'บันทึก',
+  e_cover:'กรุณาเพิ่มรูปปกหนังสือ', e_title:'กรุณาใส่ชื่อหนังสือ', e_subject:'กรุณาเลือกวิชา', e_price:'ใส่ราคาตั้งแต่ 0 ถึง 99,999 บาท', e_ig:'ใส่ชื่อผู้ใช้ไอจี เช่น @your.name',
+  e_photo:'เปิดรูปนี้ไม่ได้ ลองใช้ไฟล์ JPG หรือ PNG หรือแคปหน้าจอรูปแล้วอัปโหลดใหม่',
+  err_noperm:'คุณไม่มีสิทธิ์ทำรายการนี้',
+  err_quota:'พื้นที่เต็มแล้ว ขอให้เจ้าของหน้าลบประกาศเก่าออกก่อน', err_busy:'บันทึกถี่เกินไป รอสักครู่แล้วลองใหม่', err_generic:'บันทึกไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่',
+  n_off:'โหลดรายการหนังสือไม่ได้ในตอนนี้ ตรวจสอบอินเทอร์เน็ตแล้วรีเฟรชหน้า', n_setup:'ยังไม่ได้เชื่อมต่อฐานข้อมูล เจ้าของเว็บต้องใส่ค่า Firebase ในหน้านี้ก่อน',
+  n_ro:'ดูหนังสือ กด ♥ และแชทกับผู้ขายได้ หนังสือลงประกาศโดยแอดมินของเว็บ',
+  n_ro_admin:'อยากลงขายหรือแลกหนังสือ? ทักไอจี {ig} แล้วแอดมินจะลงให้',
+  n_slow:'ยังโหลดรายการไม่ได้ จะแสดงเมื่อเชื่อมต่อได้',
+  n_err:'รายการหยุดอัปเดต โหลดหน้าใหม่เพื่อดูล่าสุด',
+  owner_tip:'คุณเข้าสู่ระบบเป็นแอดมิน ลงประกาศ แก้ไข และลบหนังสือได้เฉพาะแอดมิน นักเรียนดูหนังสือ กด ♥ และแชทได้ ใส่ไอจีของคุณในตั้งค่าหน้าเพื่อให้นักเรียนทักมาให้ช่วยลงประกาศ',
+  dismiss:'รับทราบ', posted:'ลงประกาศแล้ว', saved:'บันทึกแล้ว', deleted:'ลบประกาศแล้ว', status_set:'อัปเดตสถานะแล้ว', loading:'กำลังโหลด ลองใหม่อีกครั้ง', settings_saved:'บันทึกการตั้งค่าแล้ว',
+  admin_ig:'ไอจีแอดมิน', admin_hint:'แสดงบนเว็บเพื่อให้นักเรียนทักมาให้คุณช่วยลงประกาศ', just_now:'เมื่อสักครู่'
+}};
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const store = {
+  get(k){ try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v){ try { localStorage.setItem(k, v); } catch {} }
+};
+let lang = store.get('pcshssk.lang') || ((navigator.language || '').toLowerCase().startsWith('th') ? 'th' : 'en');
+if (!L[lang]) lang = 'en';
+function t(k, vars){
+  let s = L[lang][k] ?? L.en[k] ?? k;
+  if (vars) s = s.replace(/\{(\w+)\}/g, (m, n) => (vars[n] ?? ''));
+  return s;
+}
+function el(tag, attrs, kids){
+  const n = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v; else n.setAttribute(k, v === true ? '' : v);
+  }
+  if (kids != null) (Array.isArray(kids) ? kids : [kids]).forEach(c => {
+    if (c == null || c === false) return;
+    n.append(typeof c === 'string' || typeof c === 'number' ? document.createTextNode(String(c)) : c);
+  });
+  return n;
+}
+const subjLabel = (k, lg = lang) => L[lg]['s_' + k] || k;
+const gradeLabel = (k, lg = lang) => L[lg]['g_' + k] || k;
+function money(p){ return p === 0 ? t('free') : '฿' + p.toLocaleString('en-US'); }
+function ago(ts){
+  if (!ts) return '';
+  const rtf = new Intl.RelativeTimeFormat(lang === 'th' ? 'th' : 'en', { numeric: 'auto' });
+  const s = (ts - Date.now()) / 1000;
+  const units = [['year', 31536000], ['month', 2592000], ['week', 604800], ['day', 86400], ['hour', 3600], ['minute', 60]];
+  for (const [u, sec] of units) if (Math.abs(s) >= sec) return rtf.format(Math.round(s / sec), u);
+  return t('just_now');
+}
+function cleanIg(v){
+  if (typeof v !== 'string') return '';
+  let s = v.trim()
+    .replace(/^https?:\/\/(www\.)?(instagram\.com|instagr\.am|ig\.me\/m)\//i, '')
+    .replace(/^@+/, '')
+    .replace(/[/?#].*$/, '');
+  return /^[A-Za-z0-9._]{1,30}$/.test(s) ? s.toLowerCase() : '';
+}
+function validCover(v){
+  return (typeof v === 'string' && v.length < 300000 && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(v)) ? v : '';
+}
+const newId = () => 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+let toastTimer;
+function toast(msg){
+  const n = $('#toast'); n.textContent = msg; n.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => n.classList.remove('show'), 2600);
+}
+
+/* ---------- state ---------- */
+const S = {
+  books: [], loaded: false, confirmed: false, slow: false, dbError: null,
+  dbState: 'waiting', me: null, isOwner: false, canWrite: null, readOnly: false, adminIg: '',
+  filter: { q: '', type: 'all', subject: '', grade: '', sort: 'new', mine: false, done: false },
+  detailId: null, editing: null, cover: '', busy: false,
+  photos: [], photoBusy: 0, photosLoading: false, photosLoadFailed: false, pendingId: null,
+  detailPhotos: [], detailIdx: 0, photoWatchId: null, unsubPhotos: null, viewIdx: 0,
+  msgs: [], msgsByBook: new Map(), interestByBook: new Map(), myInterest: {}, names: {}, userCap: null,
+  seen: {}, sending: false, liking: false, forceChatBottom: false,
+  apFilter: { cat: '', quick: '' }, apEdit: false,
+  apparel: [], apLoaded: false, apEditing: null, apPoster: '', apBusy: false, viewerList: null,
+  shelves: new Map(), legacy: [], gotShelf: false, gotLegacy: false, migrating: false, coverChanged: false, awaitCover: false
+};
+let db = null;
+const PV_EMPTY = document.getElementById('pv').innerHTML;
+
+function clean(id, d, ownerId, legacy){
+  if (!d || typeof d !== 'object' || !/^[A-Za-z0-9-]{1,64}$/.test(id)) return null;
+  const str = (v, max) => (typeof v === 'string' ? v.slice(0, max).trim() : '');
+  const title = str(d.title, 120);
+  if (!title) return null;
+  let price = (d.price === null || d.price === undefined || d.price === '') ? null : Number(d.price);
+  if (price !== null && (!Number.isFinite(price) || price < 0 || price > 99999)) price = null;
+  if (price !== null) price = Math.round(price);
+  return {
+    id, title,
+    author: str(d.author, 80),
+    subject: SUBJECTS.includes(d.subject) ? d.subject : 'other',
+    grade: GRADES.includes(d.grade) ? d.grade : 'any',
+    condition: CONDS.includes(d.condition) ? d.condition : 'good',
+    hasNotes: d.hasNotes === true,
+    type: TYPES.includes(d.type) ? d.type : 'sell',
+    price: (d.type === 'give' || d.type === 'lend') ? null : price,
+    lendDays: Math.max(1, Math.min(180, Math.round(Number(d.lendDays) || 14))),
+    dueAt: Number(d.dueAt) || 0,
+    confirmedAt: Number(d.confirmedAt) || 0,
+    availableAt: Number(d.availableAt) || 0,
+    wants: str(d.wants, 140),
+    details: str(d.details, 600),
+    ig: cleanIg(d.ig),
+    cover: legacy ? validCover(d.cover) : '',
+    coverV: legacy ? 0 : (Number(d.coverV) || 0),
+    legacy: !!legacy,
+    status: STATUSES.includes(d.status) ? d.status : 'available',
+    ownerId: typeof ownerId === 'string' && ownerId ? ownerId : null,
+    createdAt: Number(d.createdAt) || 0,
+    photoCount: Math.max(0, Math.min(MAX_PHOTOS, Math.floor(Number(d.photoCount) || 0)))
+  };
+}
+const writeAllowed = () => !!db && !!S.me && !S.readOnly && S.canWrite !== false;
+const canManage = b => !!b && !b.legacy && !!b.ownerId && writeAllowed() && S.isOwner;
+const postAllowed = () => writeAllowed() && S.isOwner;
+
+/* ---------- rendering ---------- */
+function fillSelect(sel, opts, value){
+  sel.replaceChildren(...opts.map(([v, label]) => el('option', { value: v }, label)));
+  sel.value = value;
+  if (sel.value !== value) sel.value = opts[0][0];
+}
+function applyLang(){
+  document.documentElement.lang = lang;
+  $$('[data-i18n]').forEach(n => { n.textContent = t(n.dataset.i18n); });
+  $$('[data-i18n-ph]').forEach(n => { n.placeholder = t(n.dataset.i18nPh); });
+  $$('[data-i18n-aria]').forEach(n => { n.setAttribute('aria-label', t(n.dataset.i18nAria)); });
+  const hl = $('#headline'); if (hl) hl.innerHTML = t('headline'); // static, trusted string from the dictionary
+  fillSelect($('#apCatSel'), AP_CATS.map(c => [c, t('cat_' + c)]), $('#apCatSel').value || 'uniform');
+  $$('.lang button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+  fillSelect($('#fSubject'), [['', t('all_subjects')], ...SUBJECTS.map(k => [k, subjLabel(k)])], S.filter.subject);
+  fillSelect($('#fGrade'), [['', t('all_grades')], ...GRADES.map(k => [k, gradeLabel(k)])], S.filter.grade);
+  fillSelect($('#fSort'), [['new', t('sort_new')], ['popular', t('sort_popular')], ['cheap', t('sort_cheap')]], S.filter.sort);
+  fillSelect($('#fmSubject'), [['', t('choose')], ...SUBJECTS.map(k => [k, subjLabel(k)])], $('#fmSubject').value || '');
+  fillSelect($('#fmGrade'), GRADES.map(k => [k, gradeLabel(k)]), $('#fmGrade').value || 'any');
+  buildSeg($('#condSeg'), 'cond', CONDS.map(k => [k, t('c_' + k)]));
+  buildSeg($('#typeSeg'), 'type', TYPES.map(k => [k, t('t_' + k)]));
+  $('#formTitle').textContent = t(S.editing ? 'form_edit' : 'form_new');
+  $('#submitBtn').textContent = t(S.editing ? 'submit_edit' : 'submit_new');
+  updatePickText();
+}
+function buildSeg(box, name, opts){
+  const current = (box.querySelector('input:checked') || {}).value || box.dataset.def || opts[0][0];
+  box.replaceChildren();
+  opts.forEach(([v, label]) => {
+    const id = 'fm-' + name + '-' + v;
+    const inp = el('input', { type: 'radio', name, id, value: v });
+    if (v === current) inp.checked = true;
+    box.append(inp, el('label', { for: id }, label));
+  });
+}
+
+/* ---------- apparel ---------- */
+function viewerImages(){ if (S.viewerList) return S.viewerList; const b = curBook(); return b ? galleryOf(b) : []; }
+function fmtDateTime(ts){ try { return new Intl.DateTimeFormat(lang === 'th' ? 'th-TH' : 'en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(ts)); } catch { return ''; } }
+function fmtDur(ms){
+  const sec = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(sec / 86400), h = Math.floor(sec % 86400 / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+  if (d) return t('dur_dh', { d, h });
+  if (h) return t('dur_hm', { h, m });
+  return t('dur_ms', { m, s });
+}
+function cleanFormUrl(v){
+  if (typeof v !== 'string') return '';
+  const u = v.trim();
+  return u.length <= 500 && /^https:\/\/(docs\.google\.com\/forms\/|forms\.gle\/)[A-Za-z0-9_\-\/?=&.%#~+]*$/.test(u) ? u : '';
+}
+function cleanAp(id, d){
+  if (!d || typeof d !== 'object' || !/^[A-Za-z0-9-]{1,64}$/.test(id)) return null;
+  const str = (v, max) => (typeof v === 'string' ? v.slice(0, max).trim() : '');
+  const name = str(d.name, 80), formUrl = cleanFormUrl(d.formUrl);
+  const opensAt = Number(d.opensAt) || 0, closesAt = Number(d.closesAt) || 0;
+  if (!name || !formUrl || !opensAt || !closesAt) return null;
+  let price = (d.price === null || d.price === undefined || d.price === '') ? null : Number(d.price);
+  if (price !== null && (!Number.isFinite(price) || price < 0 || price > 99999)) price = null;
+  return { id, name, formUrl, opensAt, closesAt, category: AP_CATS.includes(d.category) ? d.category : 'other', price: price === null ? null : Math.round(price), sizes: str(d.sizes, 60), details: str(d.details, 600), cover: validCover(d.cover), cutout: /^data:image\/(png|webp)/.test(d.cover || ''), createdAt: Number(d.createdAt) || 0 };
+}
+const apState = (a, now) => now < a.opensAt ? 'soon' : now < a.closesAt ? 'open' : 'closed';
+function countText(a, now){
+  const st = apState(a, now);
+  if (st === 'soon') return t('opens_in', { t: fmtDur(a.opensAt - now) });
+  if (st === 'open') return t('closes_in', { t: fmtDur(a.closesAt - now) });
+  return t('closed_on', { d: fmtDateTime(a.closesAt) });
+}
+const posterCache = new Map();
+function posterImg(a){
+  const c = posterCache.get(a.id);
+  if (c && c.src === a.cover) return c.img;
+  const img = new Image(); img.alt = ''; img.decoding = 'async'; img.loading = 'lazy'; img.src = a.cover;
+  posterCache.set(a.id, { src: a.cover, img });
+  return img;
+}
+let apSig = '';
+const AP_CATS = ['uniform', 'sport', 'jacket', 'class', 'bottoms', 'accessory', 'other'];
+const QUICK = ['open', 'closing', 'soon', 'budget'];
+function apQuickMatch(a, q, now){
+  const st = apState(a, now);
+  if (q === 'open') return st === 'open';
+  if (q === 'closing') return st === 'open' && a.closesAt - now <= 48 * 3600000;
+  if (q === 'soon') return st === 'soon';
+  if (q === 'budget') return a.price !== null && a.price <= 300 && st !== 'closed';
+  return true;
+}
+function apSorted(list, now){
+  const rank = { open: 0, soon: 1, closed: 2 };
+  return list.slice().sort((a, b) => {
+    const sa = apState(a, now), sb = apState(b, now);
+    if (sa !== sb) return rank[sa] - rank[sb];
+    if (sa === 'open') return a.closesAt - b.closesAt;
+    if (sa === 'soon') return a.opensAt - b.opensAt;
+    return b.closesAt - a.closesAt;
+  });
+}
+function apFeatured(){ const now = Date.now(); return apSorted(S.apparel.filter(a => apState(a, now) !== 'closed'), now).slice(0, 5); }
+function apMeta(a){ return [a.price !== null ? money(a.price) : null, a.sizes ? t('ap_sizes_lbl', { s: a.sizes }) : null].filter(Boolean).join(' · '); }
+const apAdmin = () => S.dbState === 'ready' && S.isOwner && writeAllowed();
+const apEditing = () => apAdmin() && S.apEdit;
+function apFakeEl(name){ return el('div', { class: 'ap-fake' }, [el('span', null, 'PRE-ORDER'), el('b', null, name)]); }
+
+/* ---------- banner carousel ---------- */
+const BN = {};
+const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+function scrollToEl(n){ if (n) n.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'start' }); }
+function bnSetup(key){
+  const root = document.getElementById(key);
+  const st = BN[key] = { idx: 0, n: 0, sig: '', paused: false, root };
+  root.querySelector('.bn-nav.prev').addEventListener('click', () => bnGo(key, st.idx - 1));
+  root.querySelector('.bn-nav.next').addEventListener('click', () => bnGo(key, st.idx + 1));
+  root.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') st.paused = true; });
+  root.addEventListener('pointerleave', () => { st.paused = false; });
+  root.addEventListener('focusin', () => { st.paused = true; });
+  root.addEventListener('focusout', () => { st.paused = false; });
+  let sx = null;
+  root.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+  root.addEventListener('touchend', e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) > 45) bnGo(key, st.idx + (dx < 0 ? 1 : -1)); });
+  root.addEventListener('click', e => { const b = e.target.closest('[data-bn-act]'); if (b) bnAction(b.dataset.bnAct); });
+  setInterval(() => { if (st.n > 1 && !st.paused && !document.hidden && !reduceMotion() && root.offsetParent !== null) bnGo(key, st.idx + 1); }, 6500);
+}
+function bnGo(key, i){
+  const st = BN[key]; if (!st || !st.n) return;
+  st.idx = ((i % st.n) + st.n) % st.n;
+  const track = st.root.querySelector('.bn-track');
+  track.style.transform = 'translateX(' + (-100 * st.idx) + '%)';
+  Array.from(track.children).forEach((sl, j) => { if (j === st.idx) sl.removeAttribute('inert'); else sl.setAttribute('inert', ''); sl.setAttribute('aria-hidden', String(j !== st.idx)); });
+  Array.from(st.root.querySelectorAll('.bn-dots button')).forEach((d, j) => d.setAttribute('aria-current', String(j === st.idx)));
+}
+function bnArt(spec){
+  const art = el('div', { class: 'bn-art', 'aria-hidden': 'true' }, [el('span', { class: 'bn-sun' })]);
+  if (spec.poster || spec.fakePoster) {
+    const p = el('div', { class: 'bn-poster' });
+    if (spec.poster && spec.poster.cutout) p.classList.add('cut');
+    p.append(spec.poster && spec.poster.cover ? imgEl(spec.poster.cover) : apFakeEl(spec.poster ? spec.poster.name : 'PCSHSSK'));
+    art.append(p);
+    return art;
+  }
+  const real = spec.covers && spec.covers.length ? spec.covers.slice(0, 4) : null;
+  const items = real || spec.fakeCovers || [];
+  art.classList.add('n' + Math.max(1, items.length));
+  items.forEach((b, i) => {
+    const c = el('div', { class: 'bn-cover c' + i });
+    const src = real ? coverSrc(b) : '';
+    c.append(src ? imgEl(src) : fakeCover(b.title, b.subject));
+    art.append(c);
+  });
+  return art;
+}
+function bnSlide(sd, i, n){
+  const copy = el('div', { class: 'bn-copy' });
+  if (sd.eyebrow) copy.append(el('p', { class: 'bn-eyebrow' + (sd.pill ? ' pill ' + sd.pill : '') }, sd.eyebrow));
+  const h = el(sd.tag || 'h2', { class: 'bn-title', id: sd.id || null });
+  if (sd.html) h.innerHTML = sd.html; else h.textContent = sd.title; // html only ever comes from the static dictionary
+  copy.append(h);
+  if (sd.sub) copy.append(el('p', { class: 'bn-sub' }, sd.sub));
+  const ap = sd.countId ? S.apparel.find(a => a.id === sd.countId) : null;
+  if (ap) copy.append(el('p', { class: 'bn-count', 'data-count': ap.id }, countText(ap, Date.now())));
+  if (sd.ctas && sd.ctas.length) copy.append(el('div', { class: 'bn-ctas' }, sd.ctas.map(c => c.href
+    ? el('a', { class: 'bn-btn' + (c.primary ? ' primary' : ''), href: c.href, target: '_blank', rel: 'noopener noreferrer' }, c.label)
+    : el('button', { type: 'button', class: 'bn-btn' + (c.primary ? ' primary' : ''), 'data-bn-act': c.act || null, disabled: c.disabled || null }, c.label))));
+  return el('div', { class: 'bn-slide', role: 'group', 'aria-roledescription': 'slide', 'aria-label': t('bn_slide', { i: i + 1, n }) }, [copy, bnArt(sd.art || {})]);
+}
+function bnRender(key, slides){
+  const st = BN[key]; if (!st) return;
+  const sig = lang + '|' + slides.map(x => x.sig).join('||');
+  if (sig === st.sig) return;
+  st.sig = sig;
+  const track = st.root.querySelector('.bn-track');
+  track.style.transition = 'none';
+  track.replaceChildren(...slides.map((x, i) => bnSlide(x, i, slides.length)));
+  st.n = slides.length;
+  st.root.querySelector('.bn-dots').replaceChildren(...slides.map((x, i) => {
+    const d = el('button', { type: 'button', 'aria-label': t('bn_slide', { i: i + 1, n: slides.length }) });
+    d.addEventListener('click', () => bnGo(key, i));
+    return d;
+  }));
+  st.root.classList.toggle('single', slides.length < 2);
+  st.root.querySelector('.bn-nav.prev').setAttribute('aria-label', t('bn_prev'));
+  st.root.querySelector('.bn-nav.next').setAttribute('aria-label', t('bn_next'));
+  bnGo(key, Math.min(st.idx, slides.length - 1));
+  void track.offsetWidth; track.style.transition = '';
+}
+function bnAction(act){
+  if (act === 'post') { openForm(null); return; }
+  if (act === 'browse') { scrollToEl($('.toolbar')); return; }
+  if (act === 'store') { location.hash = 'apparel'; return; }
+  if (act === 'apadd') { openApForm(null); return; }
+  if (act.startsWith('filter:')) {
+    const ty = act.slice(7);
+    S.filter.type = ty;
+    $$('.chip').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.type === ty)));
+    renderShelf(); scrollToEl($('.toolbar')); return;
+  }
+  if (act.startsWith('apcard:')) {
+    const id = act.slice(7);
+    S.apFilter = { cat: '', quick: '' }; renderApparel();
+    const card = document.querySelector('.ap-card[data-card="' + id + '"]');
+    if (card) { scrollToEl(card); card.classList.add('flash'); setTimeout(() => card.classList.remove('flash'), 1800); }
+  }
+}
+function exampleCovers(){
+  return lang === 'th'
+    ? [{ title: 'ฟิสิกส์ ม.4', subject: 'physics' }, { title: 'สรุปเคมี', subject: 'chem' }, { title: 'TCAS อังกฤษ', subject: 'tcas' }, { title: 'นิยาย', subject: 'novel' }]
+    : [{ title: 'Physics M.4', subject: 'physics' }, { title: 'Chem Notes', subject: 'chem' }, { title: 'TCAS English', subject: 'tcas' }, { title: 'Novel', subject: 'novel' }];
+}
+function renderBookBanner(){
+  if (!BN.bnBooks) return;
+  const live = S.books.filter(b => b.status !== 'done');
+  const covSig = list => list.map(b => b.id + (coverSrc(b) ? '+' : '-')).join(',');
+  const newest = live.slice().sort((a, b) => b.createdAt - a.createdAt).slice(0, 4);
+  newest.forEach(needCover);
+  const canPost = postAllowed();
+  const slides = [{
+    tag: 'h1', id: 'headline', html: t('headline'), eyebrow: t('eyebrow'), sub: t('lede'),
+    ctas: [canPost ? { label: t('post'), act: 'post', primary: true } : null, { label: t('bn_browse'), act: 'browse', primary: !canPost }].filter(Boolean),
+    art: newest.length ? { covers: newest } : { fakeCovers: exampleCovers() },
+    sig: 'main' + canPost + covSig(newest)
+  }];
+  const give = live.filter(b => b.type === 'give' || (b.type !== 'swap' && b.type !== 'lend' && b.price === 0));
+  const lend = live.filter(b => b.type === 'lend');
+  if (give.length + lend.length) {
+    const pick = give.concat(lend).slice(0, 4); pick.forEach(needCover);
+    slides.push({
+      eyebrow: t('bn_free_eyebrow'), title: t('bn_free_title'), sub: t('bn_free_sub', { g: give.length, l: lend.length }),
+      ctas: [give.length ? { label: t('bn_see_free'), act: 'filter:give', primary: true } : null, lend.length ? { label: t('bn_see_lend'), act: 'filter:lend', primary: !give.length } : null].filter(Boolean),
+      art: { covers: pick }, sig: 'free' + give.length + '/' + lend.length + covSig(pick)
+    });
+  }
+  const feat = apFeatured();
+  if (feat.length) {
+    const a = feat[0], st = apState(a, Date.now());
+    slides.push({ eyebrow: t('bn_store_eyebrow'), title: a.name, sub: apMeta(a), countId: a.id, ctas: [{ label: t('bn_go_store'), act: 'store', primary: true }], art: { poster: a }, sig: 'ap' + a.id + st + a.name + (a.cover ? a.cover.length : 0) + apMeta(a) });
+  }
+  bnRender('bnBooks', slides);
+}
+function renderStoreBanner(){
+  if (!BN.bnStore) return;
+  const now = Date.now(), feat = apFeatured();
+  const owner = apEditing();
+  const slides = !feat.length
+    ? [{ eyebrow: t('ap_eyebrow'), html: t('ap_bn_title'), sub: t('ap_lede'), ctas: owner ? [{ label: t('ap_add'), act: 'apadd', primary: true }] : [], art: { fakePoster: true }, sig: 'welcome' + owner }]
+    : feat.map(a => {
+        const st = apState(a, now);
+        return {
+          eyebrow: t('ap_' + st), pill: st, title: a.name,
+          sub: [apMeta(a), t('ap_window', { a: fmtDateTime(a.opensAt), b: fmtDateTime(a.closesAt) })].filter(Boolean).join(' · '),
+          countId: a.id,
+          ctas: [st === 'open' ? { label: t('ap_order') + ' ↗', href: a.formUrl, primary: true } : { label: t('ap_not_open'), disabled: true }, { label: t('bn_details'), act: 'apcard:' + a.id }],
+          art: { poster: a },
+          sig: a.id + st + a.name + (a.cover ? a.cover.length : 0) + a.opensAt + a.closesAt + apMeta(a) + a.formUrl
+        };
+      });
+  bnRender('bnStore', slides);
+}
+
+function renderApparel(){
+  const grid = $('#apGrid'); if (!grid) return;
+  const owner = apEditing();
+  $('#apAddBtn').hidden = !owner;
+  const tg = $('#apEditToggle');
+  tg.hidden = !apAdmin();
+  tg.setAttribute('aria-pressed', String(owner));
+  $('#apEditLbl').textContent = t(owner ? 'ap_edit_on' : 'ap_edit');
+  $('#apEditNote').hidden = !owner;
+  renderBookBanner();
+  if (document.body.dataset.view !== 'apparel') return;
+  renderStoreBanner();
+  const now = Date.now(), f = S.apFilter, has = S.apparel.length > 0;
+  apSig = S.apparel.map(a => a.id + apState(a, now)).sort().join('|');
+  const cats = AP_CATS.filter(c => S.apparel.some(a => a.category === c));
+  const nav = $('#apCats');
+  nav.hidden = !has;
+  nav.replaceChildren(...[''].concat(cats).map(c => el('button', { type: 'button', class: 'ap-catlink', 'data-ap-cat': c, 'aria-pressed': String(f.cat === c && !f.quick) }, c ? t('cat_' + c) : t('cat_all'))));
+  const tiles = $('#apTiles');
+  tiles.hidden = !has;
+  tiles.replaceChildren(...QUICK.map(q => {
+    const n = S.apparel.filter(a => apQuickMatch(a, q, now)).length;
+    return el('button', { type: 'button', class: 'ap-tile q-' + q, 'data-ap-quick': q, 'aria-pressed': String(f.quick === q), disabled: n ? null : true }, [
+      el('span', { class: 'ap-tile-top' }, [el('b', null, String(n)), el('span', null, t('qk_' + q))]),
+      el('span', { class: 'ap-tile-band' }, t('qkb_' + q)),
+      el('span', { class: 'ap-tile-go' }, t('shop_now'))
+    ]);
+  }));
+  const showCats = cats.length >= 2;
+  $('#apCatsHead').hidden = $('#apCatGrid').hidden = !showCats;
+  if (showCats) $('#apCatGrid').replaceChildren(...cats.map(c => {
+    const items = apSorted(S.apparel.filter(a => a.category === c), now);
+    const a = items.find(x => x.cover) || items[0];
+    const img = el('span', { class: 'ap-catimg' + (a && a.cutout ? ' cut' : '') }, [a && a.cover ? imgEl(a.cover) : apFakeEl(t('cat_' + c))]);
+    return el('button', { type: 'button', class: 'ap-catcard', 'data-ap-cat': c }, [img, el('span', { class: 'ap-catname' }, t('cat_' + c)), el('span', { class: 'ap-catn' }, t('ap_n', { n: items.length }))]);
+  }));
+  const list = apSorted(S.apparel.filter(a => (!f.cat || a.category === f.cat) && (!f.quick || apQuickMatch(a, f.quick, now))), now);
+  $('#apListTitle').textContent = f.quick ? t('qk_' + f.quick) : f.cat ? t('cat_' + f.cat) : t('ap_all_items');
+  $('#apCount').textContent = has ? t('ap_n', { n: list.length }) : '';
+  $('#apClear').hidden = !(f.cat || f.quick);
+  grid.replaceChildren();
+  if (!has) {
+    grid.append(el('p', { class: 'ap-note' }, S.dbState === 'off' ? t('n_off') : (apEditing() ? t('ap_empty_owner') : apAdmin() ? t('ap_empty_owner_off') : t('ap_empty'))));
+    grid.append(el('article', { class: 'ap-card', 'aria-hidden': 'true' }, [
+      el('div', { class: 'ap-poster' }, [apFakeEl(t('ap_example_name')), el('span', { class: 'stamp example' }, t('example'))]),
+      el('div', { class: 'ap-body' }, [
+        el('span', { class: 'ap-pill open' }, t('ap_open')),
+        el('h3', null, t('ap_example_name')),
+        el('p', { class: 'ap-meta' }, money(350) + ' · ' + t('ap_sizes_lbl', { s: 'S–3XL' })),
+        el('p', { class: 'ap-count open' }, t('closes_in', { t: t('dur_dh', { d: 3, h: 4 }) })),
+        el('span', { class: 'ap-cta off' }, t('example'))
+      ])
+    ]));
+    return;
+  }
+  if (!list.length) { grid.append(el('p', { class: 'ap-note' }, t('ap_none_match'))); return; }
+  list.forEach(a => {
+    const st = apState(a, now);
+    const poster = el('button', { type: 'button', class: 'ap-poster', 'data-ap-view': a.id, 'aria-label': t('ap_view') + ': ' + a.name });
+    if (a.cutout) poster.classList.add('cut');
+    poster.append(a.cover ? posterImg(a) : apFakeEl(a.name));
+    const meta = apMeta(a);
+    const body = el('div', { class: 'ap-body' }, [
+      el('span', { class: 'ap-pill ' + st }, t('ap_' + st)),
+      el('span', { class: 'ap-catlbl' }, t('cat_' + a.category)),
+      el('h3', null, a.name),
+      meta ? el('p', { class: 'ap-meta' }, meta) : null,
+      el('p', { class: 'ap-window' }, t('ap_window', { a: fmtDateTime(a.opensAt), b: fmtDateTime(a.closesAt) })),
+      el('p', { class: 'ap-count ' + st, 'data-count': a.id }, countText(a, now)),
+      a.details ? el('p', { class: 'ap-details' }, a.details) : null,
+      st === 'open'
+        ? el('a', { class: 'btn-ig ap-cta', href: a.formUrl, target: '_blank', rel: 'noopener noreferrer' }, t('ap_order') + ' ↗')
+        : el('span', { class: 'ap-cta off', 'aria-disabled': 'true' }, t(st === 'soon' ? 'ap_not_open' : 'ap_ended'))
+    ]);
+    if (owner) body.append(el('div', { class: 'ap-own' }, [
+      el('button', { type: 'button', class: 'btn', 'data-ap-edit': a.id }, t('edit')),
+      el('button', { type: 'button', class: 'btn btn-danger', 'data-ap-del': a.id }, t('delete'))
+    ]));
+    grid.append(el('article', { class: 'ap-card', 'data-card': a.id }, [poster, body]));
+  });
+}
+function tickApparel(){
+  if (document.hidden || !S.apparel.length) return;
+  const now = Date.now();
+  const sig = S.apparel.map(a => a.id + apState(a, now)).sort().join('|');
+  if (sig !== apSig) { apSig = sig; renderApparel(); }
+  $$('[data-count]').forEach(n => { const a = S.apparel.find(x => x.id === n.dataset.count); if (a) n.textContent = countText(a, now); });
+}
+function toLocalInput(ts){
+  const d = new Date(ts), pad = n => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+function showApPreview(){
+  const pv = $('#apPv');
+  if (S.apPoster) { const img = new Image(); img.alt = ''; img.src = S.apPoster; pv.replaceChildren(img); }
+  else pv.innerHTML = PV_EMPTY; // static markup captured at load
+  $('#apPickText').textContent = $('#apPick').dataset.busy === '1' ? t('pick_busy') : t(S.apPoster ? 'ap_pick_change' : 'ap_pick');
+}
+function openApForm(a){
+  if (!apEditing()) return;
+  S.apEditing = a ? a.id : null;
+  S.apPoster = a ? a.cover : '';
+  $('#apErr').textContent = '';
+  $('#apFormTitle').textContent = t(a ? 'ap_form_edit' : 'ap_form_new');
+  $('#apName').value = a ? a.name : '';
+  $('#apPrice').value = a && a.price !== null ? String(a.price) : '';
+  $('#apSizes').value = a ? a.sizes : '';
+  $('#apUrl').value = a ? a.formUrl : '';
+  const start = a ? a.opensAt : Math.ceil(Date.now() / 3600000) * 3600000;
+  $('#apOpens').value = toLocalInput(start);
+  $('#apCloses').value = toLocalInput(a ? a.closesAt : start + 7 * 86400000);
+  $('#apDetails').value = a ? a.details : '';
+  $('#apCatSel').value = a ? a.category : (S.apFilter.cat || 'uniform');
+  showApPreview();
+  $('#apDlg').showModal(); $('#apDlg').scrollTop = 0;
+}
+
+function fmtDate(ts){ try { return new Intl.DateTimeFormat(lang === 'th' ? 'th-TH' : 'en-GB', { day: 'numeric', month: 'short' }).format(new Date(ts)); } catch { return ''; } }
+function statusLabel(b){
+  if (b.type === 'lend') {
+    if (b.status === 'lent') return (b.dueAt && b.dueAt < Date.now()) ? t('overdue') : t('st_lent') + (b.dueAt ? ' · ' + t('due', { d: fmtDate(b.dueAt) }) : '');
+    if (b.status === 'done') return t('st_l_done');
+    if (b.status === 'available') return t('st_l_available');
+  }
+  return t('st_' + b.status);
+}
+function stampEl(b){
+  const s = el('span', { class: 'stamp ' + b.type });
+  if (b.type === 'sell') s.textContent = b.price != null ? money(b.price) : t('stamp_sell');
+  else if (b.type === 'swap') s.textContent = t('stamp_swap');
+  else if (b.type === 'give') s.textContent = t('stamp_give');
+  else if (b.type === 'lend') s.textContent = t('stamp_lend', { n: b.lendDays });
+  else s.textContent = b.price != null ? money(b.price) + ' · ' + t('or_swap') : t('stamp_sell') + ' · ' + t('or_swap');
+  return s;
+}
+function fakeCover(title, subject){
+  const d = el('div', { class: 'fake', style: '--h:' + (HUE[subject] ?? 210) });
+  d.append(el('span', { class: 'fake-sub' }, subjLabel(subject)), el('span', { class: 'fake-title' }, title));
+  return d;
+}
+const imgCache = new Map();
+const covers = new Map();
+const coverQueue = [];
+let coversInFlight = 0;
+function coverSrc(b){
+  if (b.legacy) return b.cover;
+  const c = covers.get(b.id);
+  return (c && c.v === b.coverV && c.src) ? c.src : '';
+}
+function needCover(b){
+  if (!b || b.legacy || !b.coverV || !b.ownerId || !db) return;
+  const c = covers.get(b.id);
+  if (c && c.v === b.coverV) return;
+  covers.set(b.id, { v: b.coverV, src: '' });
+  coverQueue.push({ id: b.id, owner: b.ownerId, v: b.coverV });
+  pumpCovers();
+}
+function pumpCovers(){
+  while (coversInFlight < 4 && coverQueue.length) {
+    const job = coverQueue.shift();
+    coversInFlight++;
+    Promise.resolve().then(() => db.doc('shelf/' + job.owner + '/covers/' + job.id).get())
+      .then(snap => {
+        const src = snap && snap.exists ? validCover((snap.data() || {}).src) : '';
+        const c = covers.get(job.id);
+        if (c && c.v === job.v) { c.src = src; applyCover(job.id); }
+      })
+      .catch(() => { const c = covers.get(job.id); if (c && c.v === job.v) covers.delete(job.id); })
+      .finally(() => { coversInFlight--; pumpCovers(); });
+  }
+}
+function applyCover(id){
+  const b = S.books.find(x => x.id === id); if (!b) return;
+  $$('#shelf .book[data-id="' + id + '"] .cv').forEach(n => n.replaceWith(coverEl(b)));
+  if ($('#detailDlg').open && S.detailId === id) renderGallery(b);
+  if ($('#viewerDlg').open && S.detailId === id) showView();
+  renderBookBanner();
+  if (S.awaitCover && S.editing === id) { S.cover = coverSrc(b); S.awaitCover = !S.cover; showPreview(); }
+}
+let coverIO = null;
+function observeCovers(){
+  if (coverIO) coverIO.disconnect();
+  const cards = $$('#shelf .book[data-id]').filter(card => { const b = S.books.find(x => x.id === card.dataset.id); return b && b.coverV && !coverSrc(b); });
+  if (!cards.length) return;
+  if (!('IntersectionObserver' in window)) { cards.forEach(card => needCover(S.books.find(x => x.id === card.dataset.id))); return; }
+  if (!coverIO) coverIO = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) { coverIO.unobserve(en.target); needCover(S.books.find(x => x.id === en.target.dataset.id)); } });
+  }, { rootMargin: '600px 0px' });
+  cards.forEach(card => coverIO.observe(card));
+}
+function coverEl(b){
+  const src = coverSrc(b);
+  if (src) {
+    const c = imgCache.get(b.id);
+    if (c && c.src === src) return c.img;
+    const img = new Image(); img.className = 'cv'; img.alt = ''; img.decoding = 'async'; img.loading = 'lazy'; img.src = src;
+    imgCache.set(b.id, { src, img });
+    return img;
+  }
+  const f = fakeCover(b.title, b.subject); f.classList.add('cv');
+  return f;
+}
+function chipFor(b){
+  const u = unreadFor(b);
+  if (u.a) return el('span', { class: 'newchip avail' }, t('chip_avail'));
+  if (u.m + u.i > 0) return el('span', { class: 'newchip' }, t('new_n', { n: u.m + u.i }));
+  if (S.me && b.ownerId === S.me) return el('span', { class: 'yours' }, t('yours'));
+  return null;
+}
+function syncLike(btn, b){
+  const n = (S.interestByBook.get(b.id) || []).length;
+  const on = !!S.myInterest[b.id];
+  const own = !!S.me && b.ownerId === S.me;
+  btn.dataset.like = b.id;
+  btn.setAttribute('aria-pressed', String(on));
+  btn.classList.toggle('own', own);
+  btn.querySelector('.n').textContent = String(n);
+  const lbl = btn.querySelector('.lbl');
+  if (lbl) lbl.textContent = own ? t('own_lbl') : t(on ? 'interested_on' : 'interested');
+  btn.setAttribute('aria-label', own ? t('like_own_aria', { n }) : t(on ? 'like_on_aria' : 'like_aria', { n }));
+}
+function syncChat(span, b){
+  const n = (S.msgsByBook.get(b.id) || []).length;
+  span.hidden = !n; span.querySelector('.n').textContent = String(n); span.title = t('n_msgs', { n });
+}
+function book3d(inner){
+  return [
+    el('span', { class: 'b3d-shadow', 'aria-hidden': 'true' }),
+    el('span', { class: 'b3d-floor', 'aria-hidden': 'true' }),
+    el('div', { class: 'b3d' }, [el('div', { class: 'b3d-front' }, [inner]), el('span', { class: 'b3d-pages' }), el('span', { class: 'b3d-back' })])
+  ];
+}
+function cardEl(b){
+  const card = el('article', { class: 'book' + (b.status !== 'available' ? ' is-' + b.status : ''), 'data-id': b.id });
+  const a = el('a', { class: 'book-link', href: '#book-' + b.id });
+  const cov = el('div', { class: 'cover' }, [coverEl(b), stampEl(b)]);
+  if (b.status !== 'available') cov.append(el('span', { class: 'ribbon' }, statusLabel(b)));
+  const chip = chipFor(b); if (chip) cov.append(chip);
+  if (b.photoCount > 0) cov.append(pcountEl(b.photoCount));
+  a.append(
+    cov,
+    el('h3', { class: 'b-title' }, b.title),
+    el('p', { class: 'b-meta' }, subjLabel(b.subject) + ' · ' + gradeLabel(b.grade)),
+    el('p', { class: 'b-foot' }, [el('span', { class: 'cond c-' + b.condition }, t('c_' + b.condition)), b.ig ? el('span', { class: 'b-ig' }, '@' + b.ig) : null])
+  );
+  const conf = confEl(b); if (conf) a.append(conf);
+  const like = el('button', { type: 'button', class: 'like' }, [iconEl(HEART), el('span', { class: 'n' }, '0')]);
+  syncLike(like, b);
+  const chat = el('span', { class: 'ccount' }, [iconEl(BUBBLE), el('span', { class: 'n' }, '0')]);
+  syncChat(chat, b);
+  card.append(a, el('div', { class: 'b-social' }, [like, chat]));
+  const av = availEl(b); if (av) card.append(av);
+  return card;
+}
+const DAY = 86400000;
+function lastConfirm(b){ return Math.max(b.confirmedAt || 0, b.availableAt || 0, b.createdAt || 0); }
+function confEl(b){
+  if (b.status !== 'available') return null;
+  const explicit = Math.max(b.confirmedAt || 0, b.availableAt || 0);
+  const last = lastConfirm(b), days = Math.floor((Date.now() - last) / DAY);
+  if (explicit && Date.now() - explicit < 7 * DAY) return el('p', { class: 'b-conf fresh' }, t('conf_fresh', { ago: ago(explicit) }));
+  if (last && days > 14) return el('p', { class: 'b-conf stale' }, t('conf_stale', { n: days }));
+  return null;
+}
+function availEl(b){
+  if (!postAllowed()) return null;
+  const btns = [];
+  if (b.status === 'available') {
+    const today = b.confirmedAt && Date.now() - b.confirmedAt < DAY;
+    btns.push(el('button', { type: 'button', 'data-av': 'confirm', 'aria-pressed': String(!!today) }, t(today ? 'av_confirmed_today' : 'av_confirm')));
+    btns.push(b.type === 'lend' ? el('button', { type: 'button', 'data-av': 'lent' }, t('av_lent')) : el('button', { type: 'button', 'data-av': 'reserved' }, t('av_reserve')));
+  } else {
+    btns.push(el('button', { type: 'button', class: 'go', 'data-av': 'available' }, t('av_back')));
+  }
+  return el('div', { class: 'b-avail', role: 'group', 'aria-label': t('av_hint') }, btns);
+}
+function refreshCards(){
+  $$('#shelf .book[data-id]').forEach(card => {
+    const b = S.books.find(x => x.id === card.dataset.id); if (!b) return;
+    const like = card.querySelector('.like'); if (like) syncLike(like, b);
+    const chat = card.querySelector('.ccount'); if (chat) syncChat(chat, b);
+    const cov = card.querySelector('.cover');
+    cov.querySelectorAll('.newchip,.yours').forEach(n => n.remove());
+    const chip = chipFor(b); if (chip) cov.append(chip);
+  });
+}
+function exampleCards(){
+  const ex = [
+    { title: lang === 'th' ? 'ฟิสิกส์ ม.4 เล่ม 1' : 'Physics M.4 Book 1', subject: 'physics', grade: 'm4', condition: 'good', type: 'swap', price: null, photos: 2, likes: 5, liked: true },
+    { title: lang === 'th' ? 'สรุปเคมีอินทรีย์' : 'Organic Chemistry Summary', subject: 'chem', grade: 'm5', condition: 'new', type: 'sell', price: 80, likes: 2 },
+    { title: lang === 'th' ? 'แนวข้อสอบอังกฤษ TCAS' : 'TCAS English Practice', subject: 'tcas', grade: 'm6', condition: 'fair', type: 'lend', price: null, lendDays: 14, likes: 0 },
+    { title: lang === 'th' ? 'ชีววิทยา ม.4 เล่ม 2' : 'Biology M.4 Book 2', subject: 'bio', grade: 'm4', condition: 'worn', type: 'give', price: null, likes: 8 }
+  ];
+  return ex.map(b => {
+    const card = el('div', { class: 'book example', 'aria-hidden': 'true' });
+    const cov = el('div', { class: 'cover' }, [fakeCover(b.title, b.subject), stampEl(b), el('span', { class: 'ribbon' }, t('example'))]);
+    if (b.photos) cov.append(pcountEl(b.photos));
+    card.append(cov,
+      el('h3', { class: 'b-title' }, b.title),
+      el('p', { class: 'b-meta' }, subjLabel(b.subject) + ' · ' + gradeLabel(b.grade)),
+      el('p', { class: 'b-foot' }, [el('span', { class: 'cond c-' + b.condition }, t('c_' + b.condition)), el('span', { class: 'b-ig' }, '@your.name')]),
+      el('div', { class: 'b-social' }, [el('span', { class: 'like', 'aria-pressed': b.liked ? 'true' : 'false' }, [iconEl(HEART), el('span', { class: 'n' }, String(b.likes))])]));
+    return card;
+  });
+}
+
+function visible(){
+  const f = S.filter, q = f.q.trim().toLowerCase();
+  const list = S.books.filter(b => {
+    if (!f.done && b.status === 'done') return false;
+    const free = b.type === 'give' || (b.type !== 'swap' && b.price === 0);
+    if (f.type === 'sell' && (b.type === 'swap' || b.type === 'give' || b.type === 'lend')) return false;
+    if (f.type === 'lend' && b.type !== 'lend') return false;
+    if (f.type === 'swap' && b.type !== 'swap' && b.type !== 'both') return false;
+    if (f.type === 'give' && !free) return false;
+    if (f.subject && b.subject !== f.subject) return false;
+    if (f.grade && b.grade !== f.grade) return false;
+    if (f.mine && (!S.me || b.ownerId !== S.me)) return false;
+    if (q) {
+      const hay = [b.title, b.author, b.wants, b.details, '@' + b.ig, subjLabel(b.subject, 'en'), subjLabel(b.subject, 'th'), gradeLabel(b.grade, 'en'), gradeLabel(b.grade, 'th')].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  const cost = b => (b.type === 'give' || b.type === 'lend') ? 0 : (b.type === 'swap' || b.price == null ? 1e9 : b.price);
+  const pop = b => (S.interestByBook.get(b.id) || []).length;
+  if (f.sort === 'cheap') list.sort((a, b) => (cost(a) - cost(b)) || (b.createdAt - a.createdAt));
+  else if (f.sort === 'popular') list.sort((a, b) => (pop(b) - pop(a)) || (b.createdAt - a.createdAt));
+  else list.sort((a, b) => b.createdAt - a.createdAt);
+  list.sort((a, b) => (a.status === 'done') - (b.status === 'done'));
+  return list;
+}
+const filtersActive = () => { const f = S.filter; return !!(f.q.trim() || f.type !== 'all' || f.subject || f.grade || f.mine); };
+
+function renderStats(){
+  const live = S.books.filter(b => b.status !== 'done');
+  const ready = S.loaded;
+  $('#stTotal').textContent = ready ? live.length : '–';
+  $('#stSell').textContent = ready ? live.filter(b => (b.type === 'sell' || b.type === 'both') && b.price !== 0).length : '–';
+  $('#stSwap').textContent = ready ? live.filter(b => b.type === 'swap' || b.type === 'both').length : '–';
+  $('#stLend').textContent = ready ? live.filter(b => b.type === 'lend').length : '–';
+  $('#stGive').textContent = ready ? live.filter(b => b.type === 'give' || (b.type !== 'swap' && b.price === 0)).length : '–';
+}
+function renderShelf(){
+  const shelf = $('#shelf');
+  shelf.replaceChildren();
+  $('#clearBtn').hidden = !filtersActive();
+  if (!S.loaded && S.dbState !== 'off') {
+    for (let i = 0; i < 6; i++) shelf.append(el('div', { class: 'book skel', 'aria-hidden': 'true' }, [el('div', { class: 'cover' }), el('div', { class: 'bar' }), el('div', { class: 'bar short' })]));
+    $('#resultCount').textContent = '';
+    return;
+  }
+  const list = visible();
+  const n = list.length;
+  $('#resultCount').textContent = n === 0 ? t('count0') : n === 1 ? t('count1') : t('count', { n });
+  if (S.books.length === 0) {
+    const box = el('div', { class: 'empty' });
+    const txt = el('div', null, [el('h3', null, t('empty_t')), el('p', null, postAllowed() ? t('empty_d') : (S.dbState === 'off' ? t('n_off') : t('empty_ro')))]);
+    box.append(txt);
+    if (postAllowed()) { const b = el('button', { type: 'button', class: 'btn btn-dark' }, t('post')); b.addEventListener('click', () => openForm(null)); box.append(b); }
+    shelf.append(box, el('p', { class: 'examples-label' }, t('examples')), ...exampleCards());
+    return;
+  }
+  if (n === 0) {
+    const box = el('div', { class: 'empty' }, [el('div', null, [el('h3', null, t('nomatch_t')), el('p', null, t('nomatch_d'))])]);
+    const b = el('button', { type: 'button', class: 'btn' }, t('clear')); b.addEventListener('click', clearFilters); box.append(b);
+    shelf.append(box);
+    return;
+  }
+  const frag = document.createDocumentFragment();
+  list.forEach(b => frag.append(cardEl(b)));
+  shelf.append(frag);
+  observeCovers();
+}
+function renderNotice(){
+  const box = $('#notice'), p = $('#noticeText'), dis = $('#noticeDismiss');
+  box.classList.remove('warn'); dis.hidden = true; p.replaceChildren();
+  let show = true;
+  if (S.dbState === 'off') { p.textContent = t(window.PCSHSSK_FB_STATE === 'setup' ? 'n_setup' : 'n_off'); box.classList.add('warn'); }
+  else if (S.dbError) { p.textContent = t('n_err'); box.classList.add('warn'); }
+  else if (S.slow) { p.textContent = t('n_slow'); box.classList.add('warn'); }
+  else if (S.dbState === 'ready' && !postAllowed()) {
+    if (S.adminIg) {
+      const [a, b] = t('n_ro_admin').split('{ig}');
+      p.append(a, el('a', { href: 'https://ig.me/m/' + S.adminIg, target: '_blank', rel: 'noopener noreferrer' }, '@' + S.adminIg), b || '');
+    } else p.textContent = t('n_ro');
+  }
+  else if (S.dbState === 'ready' && S.isOwner && store.get('pcshssk.ownerTip') !== '1') { p.textContent = t('owner_tip'); dis.hidden = false; }
+  else show = false;
+  box.hidden = !show;
+}
+function renderControls(){
+  const ready = S.dbState === 'ready';
+  $('#mineWrap').hidden = !(ready && S.me && S.books.some(b => b.ownerId === S.me));
+  if ($('#mineWrap').hidden && S.filter.mine) { S.filter.mine = false; $('#fMine').checked = false; }
+  $('#settingsBtn').hidden = !(ready && S.isOwner);
+}
+function renderAll(){
+  if ($('#detailDlg').open && S.detailId) markSeen(S.detailId);
+  renderStats(); renderControls(); renderNotice(); renderActivity(); renderShelf(); renderBookBanner();
+  if ($('#detailDlg').open) {
+    const b = S.books.find(x => x.id === S.detailId);
+    if (b) fillDetail(b); else $('#detailDlg').close();
+  }
+}
+
+/* ---------- detail ---------- */
+function fillDetail(b){
+  needCover(b);
+  watchPhotos(b);
+  renderGallery(b);
+  const pr = $('#dPrice');
+  pr.className = 'd-price ' + b.type;
+  pr.textContent = b.type === 'lend' ? t('price_lend', { n: b.lendDays }) : b.type === 'give' ? t('price_give') : b.type === 'swap' ? t('price_swap') : b.type === 'both' ? (b.price != null ? t('price_both', { p: money(b.price) }) : t('price_both', { p: t('stamp_sell') })) : (b.price != null ? money(b.price) : t('stamp_sell'));
+  $('#dTitle').textContent = b.title;
+  $('#dAuthor').textContent = b.author; $('#dAuthor').hidden = !b.author;
+  const facts = [[t('f_subject'), subjLabel(b.subject)], [t('f_grade'), gradeLabel(b.grade)], [t('f_cond'), t('c_' + b.condition)], [t('f_notes'), b.hasNotes ? t('yes') : t('no')], [t('f_posted'), ago(b.createdAt)]];
+  if (b.type === 'lend' && b.status === 'lent' && b.dueAt) facts.splice(4, 0, [t('f_due'), fmtDate(b.dueAt)]);
+  if (b.status === 'available') facts.push([t('f_confirmed'), ago(lastConfirm(b))]);
+  $('#dFacts').replaceChildren(...facts.map(([k, v]) => el('div', null, [el('dt', null, k), el('dd', null, v)])));
+  $('#dWantsBlock').hidden = b.type === 'sell' || b.type === 'give';
+  $('#dWants').textContent = b.wants || t('open_offers');
+  $('#dDetailsBlock').hidden = !b.details;
+  $('#dDetails').textContent = b.details;
+  $('#dContact').hidden = !b.ig; $('#dNoIg').hidden = !!b.ig;
+  if (b.ig) {
+    $('#dDm').href = 'https://ig.me/m/' + b.ig;
+    $('#dDmText').textContent = t('dm', { ig: b.ig });
+    $('#dProfile').href = 'https://www.instagram.com/' + b.ig + '/';
+    $('#dHello').textContent = t(b.type === 'give' ? 'hello_give' : b.type === 'lend' ? 'hello_lend' : 'hello', { title: b.title });
+    $('#dCopyIg').textContent = t('copy_ig', { ig: b.ig });
+  }
+  const m = canManage(b);
+  $('#dManage').hidden = !m;
+  if (m) {
+    $('#dManageTitle').textContent = (S.me && b.ownerId === S.me) ? t('manage_own') : t('manage_admin');
+    $$('#dManage [data-status]').forEach(btn => {
+      const st = btn.dataset.status, lend = b.type === 'lend';
+      btn.hidden = lend ? st === 'reserved' : st === 'lent';
+      btn.textContent = lend && st === 'available' ? t('st_l_available') : lend && st === 'done' ? t('st_l_done') : t('st_' + st);
+      btn.setAttribute('aria-pressed', String(st === b.status));
+    });
+    $('#dConfirm').hidden = b.status !== 'available';
+    $('#dDelete').hidden = !S.isOwner;
+    $('#dNoDel').hidden = !!S.isOwner;
+  }
+  renderSocial(b);
+}
+function openDetail(id){
+  const b = S.books.find(x => x.id === id);
+  if (!b) return;
+  if (S.detailId !== id) { disarmDelete(); S.detailIdx = 0; $('#chatInput').value = ''; $('#chatErr').textContent = ''; }
+  S.detailId = id;
+  S.forceChatBottom = true;
+  markSeen(id);
+  fillDetail(b);
+  const d = $('#detailDlg');
+  if (!d.open) { d.showModal(); d.scrollTop = 0; }
+  renderActivity(); renderShelf();
+}
+function setView(v){
+  if (document.body.dataset.view === v) return;
+  document.body.dataset.view = v;
+  $$('.tab').forEach(a => a.setAttribute('aria-current', a.dataset.view === v ? 'page' : 'false'));
+  $('#viewBooks').hidden = v !== 'books';
+  $('#viewApparel').hidden = v !== 'apparel';
+  if (v === 'apparel') renderApparel();
+  window.scrollTo(0, 0);
+}
+function route(){
+  setView(location.hash === '#apparel' ? 'apparel' : 'books');
+  const m = /^#book-([A-Za-z0-9-]{1,64})$/.exec(location.hash);
+  if (m) { if (S.loaded) openDetail(m[1]); }
+  else if ($('#detailDlg').open) $('#detailDlg').close();
+}
+/* ---------- chat + interest ---------- */
+const HEART = '<svg class="ico-heart" width="14" height="14" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17s-6.5-4.1-6.5-8.6A3.6 3.6 0 0 1 10 6a3.6 3.6 0 0 1 6.5 2.4C16.5 12.9 10 17 10 17z" stroke-width="2.2" stroke-linejoin="round"/></svg>';
+const BUBBLE = '<svg width="14" height="14" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
+function iconEl(svg){ const s = document.createElement('span'); s.innerHTML = svg; return s.firstChild; } // static markup only
+const ID_RE = /^[A-Za-z0-9-]{1,64}$/;
+const newMid = () => 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+function cleanMsg(id, d){
+  if (!d || typeof d !== 'object' || !ID_RE.test(id)) return null;
+  const text = typeof d.text === 'string' ? d.text.slice(0, 500).trim() : '';
+  const bookId = typeof d.bookId === 'string' && ID_RE.test(d.bookId) ? d.bookId : null;
+  if (!text || !bookId) return null;
+  return { id, bookId, text, authorId: typeof d.authorId === 'string' ? d.authorId : null, createdAt: Number(d.createdAt) || 0 };
+}
+function indexMsgs(){
+  const m = new Map();
+  S.msgs.slice().sort((a, b) => a.createdAt - b.createdAt).forEach(x => { if (!m.has(x.bookId)) m.set(x.bookId, []); m.get(x.bookId).push(x); });
+  S.msgsByBook = m;
+}
+function indexInterest(docs){
+  const m = new Map(); let mine = {};
+  docs.forEach(({ id, data }) => {
+    const books = data && typeof data.books === 'object' && data.books ? data.books : {};
+    const clean = {};
+    for (const [bid, at] of Object.entries(books)) {
+      const ts = Number(at);
+      if (!ID_RE.test(bid) || !Number.isFinite(ts)) continue;
+      clean[bid] = ts;
+      if (!m.has(bid)) m.set(bid, []);
+      m.get(bid).push({ uid: id, at: ts });
+    }
+    if (id === S.me) mine = clean;
+  });
+  m.forEach(arr => arr.sort((a, b) => a.at - b.at));
+  S.interestByBook = m; S.myInterest = mine;
+}
+function loadSeen(){ try { const o = JSON.parse(store.get('pcshssk.seen') || '{}'); return (o && typeof o === 'object') ? o : {}; } catch { return {}; } }
+function markSeen(id){ S.seen[id] = Date.now(); store.set('pcshssk.seen', JSON.stringify(S.seen)); }
+function involved(b){
+  if (!S.me) return false;
+  return b.ownerId === S.me || !!S.myInterest[b.id] || (S.msgsByBook.get(b.id) || []).some(m => m.authorId === S.me);
+}
+function unreadFor(b){
+  if (!S.me || !involved(b)) return { m: 0, i: 0, a: 0 };
+  const seen = Number(S.seen[b.id]) || 0;
+  const m = (S.msgsByBook.get(b.id) || []).filter(x => x.authorId !== S.me && x.createdAt > seen).length;
+  const i = b.ownerId === S.me ? (S.interestByBook.get(b.id) || []).filter(x => x.uid !== S.me && x.at > seen).length : 0;
+  const liked = Number(S.myInterest[b.id]) || 0;
+  const a = (b.ownerId !== S.me && liked && b.status === 'available' && b.availableAt > Math.max(seen, liked)) ? 1 : 0;
+  return { m, i, a };
+}
+const namesPending = new Set();
+async function ensureNames(ids){
+  const cap = S.userCap;
+  if (!cap || typeof cap.profiles !== 'function') return;
+  const need = [...new Set(ids)].filter(id => id && id !== S.me && !(id in S.names) && !namesPending.has(id));
+  if (!need.length) return;
+  need.forEach(id => namesPending.add(id));
+  try { const ps = await cap.profiles(need); need.forEach(id => { const p = ps && ps[id]; S.names[id] = (p && p.name) || ''; }); }
+  catch { need.forEach(id => { S.names[id] = ''; }); }
+  finally { need.forEach(id => namesPending.delete(id)); }
+  const b = curBook(); if (b && $('#detailDlg').open) renderSocial(b);
+}
+const nameOf = id => (id && id === S.me) ? t('you') : (S.names[id] || t('someone'));
+function renderActivity(){
+  const box = $('#activity');
+  if (!S.me || S.dbState !== 'ready') { box.hidden = true; return; }
+  const items = S.books.map(b => ({ b, u: unreadFor(b) })).filter(x => x.u.m || x.u.i || x.u.a).sort((x, y) => y.u.a - x.u.a);
+  if (!items.length) { box.hidden = true; return; }
+  const p = $('#activityText');
+  p.replaceChildren(el('strong', null, t('act_title')), ' ');
+  items.slice(0, 4).forEach((x, i) => {
+    if (i) p.append(' · ');
+    const parts = [];
+    if (x.u.a) parts.push(t('act_avail'));
+    if (x.u.m) parts.push(t('act_msgs', { n: x.u.m }));
+    if (x.u.i) parts.push(t('act_int', { n: x.u.i }));
+    p.append(el('a', { href: '#book-' + x.b.id }, x.b.title), ' (' + parts.join(', ') + ')');
+  });
+  if (items.length > 4) p.append(' · ' + t('act_more', { n: items.length - 4 }));
+  box.hidden = false;
+}
+function renderSocialAll(){
+  if ($('#detailDlg').open && S.detailId) markSeen(S.detailId);
+  renderActivity();
+  if (S.filter.sort === 'popular') renderShelf(); else refreshCards();
+  const b = curBook(); if (b && $('#detailDlg').open) renderSocial(b);
+}
+function renderSocial(b){
+  const msgs = S.msgsByBook.get(b.id) || [];
+  const ints = S.interestByBook.get(b.id) || [];
+  const own = !!S.me && b.ownerId === S.me;
+  const canW = writeAllowed();
+  syncLike($('#dLike'), b);
+  $('#dChatCount').textContent = msgs.length ? String(msgs.length) : '';
+  const q = $('#dQueue'); q.replaceChildren();
+  if (ints.length) { q.append(el('strong', null, t('queue', { n: ints.length })), ' ' + ints.map((x, i) => (i + 1) + '. ' + nameOf(x.uid)).join(' · ')); q.hidden = false; }
+  else if (own) { q.textContent = t('queue_none_own'); q.hidden = false; }
+  else q.hidden = true;
+
+  const list = $('#dMsgs');
+  const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 48;
+  list.replaceChildren();
+  if (!msgs.length) list.append(el('li', { class: 'none' }, t(own ? 'chat_none_own' : 'chat_none')));
+  msgs.forEach(m => {
+    const mine = !!S.me && m.authorId === S.me;
+    const poster = !!m.authorId && m.authorId === b.ownerId;
+    const meta = el('div', { class: 'mmeta' }, [el('span', { class: 'who' }, nameOf(m.authorId)), poster ? el('span', { class: 'mbadge' }, t('poster')) : null, el('time', null, ago(m.createdAt))]);
+    if (canW && (mine || S.isOwner)) {
+      const d = el('button', { type: 'button', class: 'mdel' }, t('delete'));
+      d.addEventListener('click', () => delMsg(m, d));
+      meta.append(d);
+    }
+    list.append(el('li', { class: 'msg' + (mine ? ' mine' : '') + (poster ? ' poster' : '') }, [meta, el('p', null, m.text)]));
+  });
+  if (atBottom || S.forceChatBottom) { list.scrollTop = list.scrollHeight; S.forceChatBottom = false; }
+
+  $('#chatForm').hidden = !canW; $('#chatRo').hidden = canW;
+  const keys = own ? ['qp_here', 'qp_meet'] : ['q_avail']
+    .concat(b.type === 'give' ? ['q_give'] : b.type === 'lend' ? ['q_borrow'] : [])
+    .concat((b.type === 'sell' || b.type === 'both') && b.price ? ['q_price'] : [])
+    .concat(b.type === 'swap' || b.type === 'both' ? ['q_swap'] : [])
+    .concat(['q_meet']);
+  $('#dQuick').replaceChildren(...keys.map(k => {
+    const btn = el('button', { type: 'button' }, t(k));
+    btn.addEventListener('click', () => { const ta = $('#chatInput'); ta.value = ta.value.trim() ? ta.value.trim() + ' ' + t(k) : t(k); autoGrow(); ta.focus(); });
+    return btn;
+  }));
+  ensureNames(msgs.map(m => m.authorId).concat(ints.map(x => x.uid)));
+}
+function autoGrow(){ const ta = $('#chatInput'); ta.style.height = 'auto'; ta.style.height = Math.min(140, ta.scrollHeight + 3) + 'px'; }
+async function sendMsg(){
+  const ta = $('#chatInput'), btn = $('#chatSend'), b = curBook();
+  const text = ta.value.trim().slice(0, 500);
+  if (!text || !b || S.sending) return;
+  if (!writeAllowed()) { $('#chatErr').textContent = t('err_noperm'); return; }
+  S.sending = true; btn.disabled = true; $('#chatErr').textContent = '';
+  const id = newMid();
+  try {
+    await withRetry(() => db.doc('msgs/' + id).set({ bookId: b.id, text, authorId: S.me, createdAt: Date.now() }));
+    ta.value = ''; autoGrow(); S.forceChatBottom = true; markSeen(b.id);
+  } catch (e) { $('#chatErr').textContent = dbErrMsg(e); }
+  finally { S.sending = false; btn.disabled = false; }
+}
+async function delMsg(m, btn){
+  if (btn.dataset.armed !== '1') {
+    btn.dataset.armed = '1'; btn.textContent = t('delete_q');
+    setTimeout(() => { if (btn.isConnected) { btn.dataset.armed = '0'; btn.textContent = t('delete'); } }, 3000);
+    return;
+  }
+  btn.disabled = true;
+  try { await withRetry(() => db.doc('msgs/' + m.id).delete()); }
+  catch (e) { toast(dbErrMsg(e)); btn.disabled = false; }
+}
+function applyMyInterest(mine){
+  const m = new Map();
+  S.interestByBook.forEach((arr, bid) => { const f = arr.filter(x => x.uid !== S.me); if (f.length) m.set(bid, f); });
+  for (const [bid, at] of Object.entries(mine)) { if (!m.has(bid)) m.set(bid, []); m.get(bid).push({ uid: S.me, at }); m.get(bid).sort((a, b) => a.at - b.at); }
+  S.interestByBook = m; S.myInterest = mine;
+  renderSocialAll();
+}
+async function toggleInterest(bookId, btn){
+  const b = S.books.find(x => x.id === bookId);
+  if (!b || (S.me && b.ownerId === S.me)) return;
+  if (!writeAllowed()) { toast(t('like_ro')); return; }
+  if (S.liking) return;
+  const before = S.myInterest;
+  const mine = {};
+  for (const [k, v] of Object.entries(before)) if (S.books.some(x => x.id === k)) mine[k] = v;
+  const was = !!mine[bookId];
+  if (was) delete mine[bookId]; else mine[bookId] = Date.now();
+  S.liking = true;
+  applyMyInterest(mine);
+  if (!was) $$('[data-like="' + bookId + '"]').forEach(x => { x.classList.remove('pop'); void x.offsetWidth; x.classList.add('pop'); });
+  try {
+    await withRetry(() => db.doc('interest/' + S.me).set({ books: mine, updatedAt: Date.now() }));
+    markSeen(bookId);
+  } catch (e) { applyMyInterest(before); toast(dbErrMsg(e)); }
+  finally { S.liking = false; }
+}
+
+/* ---------- photos: gallery + viewer ---------- */
+function pcountEl(n){ const s = el('span', { class: 'pcount', title: t('n_photos', { n }) }); s.innerHTML = CAM; s.append('+' + n); return s; }
+const newPid = () => 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+function imgEl(src){ const img = new Image(); img.alt = ''; img.decoding = 'async'; img.src = src; return img; }
+function photoList(snap){
+  return snap.docs.filter(d => d.exists).map(d => { const v = d.data() || {}; return { id: d.id, src: validCover(v.src), order: Number(v.order) || 0, at: Number(v.createdAt) || 0 }; })
+    .filter(p => p.src && /^[A-Za-z0-9-]{1,64}$/.test(p.id))
+    .sort((a, b) => (a.order - b.order) || (a.at - b.at))
+    .slice(0, MAX_PHOTOS);
+}
+function galleryOf(b){ const c = coverSrc(b); return (c ? [c] : []).concat(S.photoWatchId === b.id ? S.detailPhotos.map(p => p.src) : []); }
+function photosQuery(b){ return b.legacy ? db.collection('books/' + b.id + '/photos') : db.collection('shelf/' + b.ownerId + '/photos').where('bookId', '==', b.id); }
+function stopPhotos(){
+  if (S.unsubPhotos) { try { S.unsubPhotos(); } catch {} }
+  S.unsubPhotos = null; S.photoWatchId = null; S.detailPhotos = [];
+}
+function watchPhotos(b){
+  const id = b.id;
+  if (S.photoWatchId === id) return;
+  stopPhotos();
+  S.photoWatchId = id;
+  if (!db || (!b.legacy && !b.ownerId)) return;
+  try {
+    S.unsubPhotos = photosQuery(b).onSnapshot(snap => {
+      if (S.photoWatchId !== id) return;
+      S.detailPhotos = photoList(snap);
+      const b = S.books.find(x => x.id === id);
+      if (b && $('#detailDlg').open) renderGallery(b);
+      if ($('#viewerDlg').open) showView();
+    }, () => {});
+  } catch {}
+}
+function galleryItems(b){
+  const c = coverSrc(b);
+  const photos = S.photoWatchId === b.id ? S.detailPhotos.map(p => ({ src: p.src })) : [];
+  return (c ? [{ src: c }] : []).concat(photos);
+}
+// map a gallery position to the full-screen viewer, which shows flat images only
+const hasCoverItems = b => !!coverSrc(b);
+const toViewIdx = (b, i) => i;
+const fromViewIdx = (b, v) => v;
+function renderGallery(b){
+  const items = galleryItems(b);
+  const imgs = items.map(x => x.src);
+  if (S.detailIdx >= items.length) S.detailIdx = 0;
+  const cv = $('#dCover');
+  const item = items[S.detailIdx];
+  const inner = item ? imgEl(item.src) : fakeCover(b.title, b.subject);
+  cv.classList.remove('stage');
+  cv.replaceChildren(inner);
+  if (S.detailIdx === 0) {
+    cv.append(stampEl(b));
+    if (b.status !== 'available') cv.append(el('span', { class: 'ribbon' }, statusLabel(b)));
+  }
+  if (imgs.length) { cv.setAttribute('role', 'button'); cv.tabIndex = 0; cv.setAttribute('aria-label', t('enlarge')); cv.classList.add('zoom'); }
+  else { cv.removeAttribute('role'); cv.removeAttribute('tabindex'); cv.removeAttribute('aria-label'); cv.classList.remove('zoom'); }
+  const th = $('#dThumbs');
+  th.hidden = items.length < 2;
+  th.replaceChildren(...items.map((it, i) => {
+    const btn = el('button', { type: 'button', class: it.mock ? 'mock' : null, 'aria-label': it.label || t('photo_n', { n: i + 1 }), 'aria-current': String(i === S.detailIdx) });
+    btn.append(imgEl(it.src));
+    if (it.label) btn.append(el('span', { class: 'tlbl', 'aria-hidden': 'true' }, it.label));
+    btn.addEventListener('click', () => { S.detailIdx = i; renderGallery(b); });
+    return btn;
+  }));
+  $('#dPhotoHint').hidden = imgs.length === 0;
+}
+const curBook = () => S.books.find(x => x.id === S.detailId);
+function showView(){
+  const imgs = viewerImages();
+  if (!imgs.length) { if ($('#viewerDlg').open) $('#viewerDlg').close(); return; }
+  S.viewIdx = ((S.viewIdx % imgs.length) + imgs.length) % imgs.length;
+  $('#vImg').src = imgs[S.viewIdx];
+  $('#vCount').textContent = (S.viewIdx + 1) + ' / ' + imgs.length;
+  $('#vPrev').hidden = $('#vNext').hidden = imgs.length < 2;
+}
+function openViewer(i){
+  const b = curBook(); if (!b || !galleryOf(b).length) return;
+  S.viewIdx = i; showView();
+  if (!$('#viewerDlg').open) $('#viewerDlg').showModal();
+}
+const stepView = d => { S.viewIdx += d; showView(); };
+
+/* ---------- photos: form ---------- */
+function renderPhotoGrid(){
+  const g = $('#pgrid'); g.replaceChildren();
+  const live = S.photos.filter(p => !p.removed);
+  live.forEach(p => {
+    const x = el('button', { type: 'button', 'aria-label': t('remove_photo') }, '×');
+    x.addEventListener('click', () => { if (p.isNew) S.photos.splice(S.photos.indexOf(p), 1); else p.removed = true; renderPhotoGrid(); });
+    g.append(el('div', { class: 'pth' }, [imgEl(p.src), x]));
+  });
+  for (let i = 0; i < S.photoBusy; i++) g.append(el('div', { class: 'padd' }, t('pick_busy')));
+  if (S.photosLoading) g.append(el('div', { class: 'padd' }, t('photos_loading')));
+  else if (live.length + S.photoBusy < MAX_PHOTOS) {
+    const inp = el('input', { type: 'file', class: 'vh', accept: 'image/*', multiple: true, id: 'fmPhotos' });
+    g.append(el('label', { class: 'padd' }, [inp, '+ ' + t('add_photo')]));
+  }
+}
+async function takePhotos(files){
+  const room = MAX_PHOTOS - S.photos.filter(p => !p.removed).length - S.photoBusy;
+  if (files.length > room) $('#formErr').textContent = t('photos_max');
+  const list = files.slice(0, Math.max(0, room));
+  S.photoBusy += list.length; renderPhotoGrid();
+  for (const f of list) {
+    try { const src = await compress(f, 1000, 1000, 200000); S.photos.push({ id: newPid(), src, isNew: true, removed: false }); }
+    catch { $('#formErr').textContent = t('e_photo'); }
+    finally { S.photoBusy--; renderPhotoGrid(); }
+  }
+}
+
+function disarmDelete(){ const b = $('#dDelete'); b.dataset.armed = '0'; b.textContent = t('delete'); clearTimeout(b._t); }
+
+/* ---------- form ---------- */
+function updatePickText(){
+  const busy = $('#pick').dataset.busy === '1';
+  $('#pickText').textContent = busy ? t('pick_busy') : S.cover ? t('pick_change') : t('pick');
+}
+function showPreview(){
+  const pv = $('#pv');
+  if (S.cover) { const img = new Image(); img.alt = ''; img.src = S.cover; pv.replaceChildren(img); }
+  else pv.innerHTML = PV_EMPTY; // static markup captured at load
+  updatePickText();
+}
+function selectedRadio(name){ const r = document.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : ''; }
+function setRadio(name, v){ const r = document.getElementById('fm-' + name + '-' + v); if (r) r.checked = true; }
+function updateTypeFields(){
+  const ty = selectedRadio('type') || 'sell';
+  $('#priceField').hidden = ty === 'swap' || ty === 'give' || ty === 'lend';
+  $('#wantsField').hidden = ty === 'sell' || ty === 'give' || ty === 'lend';
+  $('#daysField').hidden = ty !== 'lend';
+  $('#giveNote').hidden = ty !== 'give';
+}
+function openForm(b){
+  if (!db) { toast(t('loading')); return; }
+  if (!postAllowed()) { toast(t('err_noperm')); return; }
+  S.editing = b ? b.id : null;
+  S.cover = b ? coverSrc(b) : '';
+  S.coverChanged = false;
+  S.awaitCover = !!(b && !S.cover && b.coverV);
+  if (S.awaitCover) needCover(b);
+  $('#formErr').textContent = '';
+  $('#fmTitle').value = b ? b.title : '';
+  $('#fmAuthor').value = b ? b.author : '';
+  $('#fmSubject').value = b ? b.subject : '';
+  $('#fmGrade').value = b ? b.grade : 'any';
+  setRadio('cond', b ? b.condition : 'good');
+  setRadio('type', b ? b.type : 'sell');
+  $('#fmNotes').checked = b ? b.hasNotes : false;
+  $('#fmPrice').value = b && b.price != null ? String(b.price) : '';
+  $('#fmWants').value = b ? b.wants : '';
+  $('#fmDetails').value = b ? b.details : '';
+  $('#fmIg').value = b ? b.ig : (store.get('pcshssk.ig') || '');
+  $('#fmDays').value = String(b && b.lendDays ? b.lendDays : 14);
+  $('#formTitle').textContent = t(S.editing ? 'form_edit' : 'form_new');
+  $('#submitBtn').textContent = t(S.editing ? 'submit_edit' : 'submit_new');
+  updateTypeFields(); showPreview();
+  S.photos = []; S.photoBusy = 0; S.photosLoading = false; S.photosLoadFailed = false; S.pendingId = null;
+  if (b && b.photoCount > 0) {
+    S.photosLoading = true;
+    const editId = b.id;
+    photosQuery(b).get()
+      .then(snap => { if (S.editing === editId) S.photos = photoList(snap).map(p => ({ id: p.id, src: p.src, isNew: false, removed: false })); })
+      .catch(() => { if (S.editing === editId) S.photosLoadFailed = true; })
+      .finally(() => { if (S.editing === editId) { S.photosLoading = false; renderPhotoGrid(); } });
+  }
+  renderPhotoGrid();
+  const d = $('#formDlg');
+  if ($('#detailDlg').open) $('#detailDlg').close();
+  d.showModal(); d.scrollTop = 0;
+}
+function readForm(){
+  const type = selectedRadio('type') || 'sell';
+  const rawPrice = $('#fmPrice').value.trim();
+  return {
+    title: $('#fmTitle').value.trim().slice(0, 120),
+    author: $('#fmAuthor').value.trim().slice(0, 80),
+    subject: $('#fmSubject').value,
+    grade: GRADES.includes($('#fmGrade').value) ? $('#fmGrade').value : 'any',
+    condition: CONDS.includes(selectedRadio('cond')) ? selectedRadio('cond') : 'good',
+    hasNotes: $('#fmNotes').checked,
+    type,
+    price: (type === 'swap' || type === 'give' || type === 'lend') ? null : (rawPrice === '' ? NaN : Number(rawPrice)),
+    lendDays: type === 'lend' ? Number($('#fmDays').value) : undefined,
+    wants: (type === 'sell' || type === 'give' || type === 'lend') ? '' : $('#fmWants').value.trim().slice(0, 140),
+    details: $('#fmDetails').value.trim().slice(0, 600),
+    ig: cleanIg($('#fmIg').value),
+    cover: S.cover
+  };
+}
+function validate(d){
+  const prev = S.editing ? S.books.find(x => x.id === S.editing) : null;
+  if (!d.cover && !(prev && prev.coverV)) return ['e_cover', '#pick'];
+  if (!d.title) return ['e_title', '#fmTitle'];
+  if (!SUBJECTS.includes(d.subject)) return ['e_subject', '#fmSubject'];
+  if ((d.type === 'sell' || d.type === 'both') && (!Number.isInteger(d.price) || d.price < 0 || d.price > 99999)) return ['e_price', '#fmPrice'];
+  if (d.type === 'lend' && (!Number.isInteger(d.lendDays) || d.lendDays < 1 || d.lendDays > 180)) return ['e_days', '#fmDays'];
+  if ($('#fmIg').value.trim() && !d.ig) return ['e_ig', '#fmIg'];
+  return null;
+}
+function loadImg(file){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { res(img); setTimeout(() => URL.revokeObjectURL(url), 2000); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('decode')); };
+    img.src = url;
+  });
+}
+function canvasHasAlpha(c){
+  try {
+    const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+    const step = Math.max(1, Math.floor(c.width * c.height / 60000)) * 4;
+    for (let i = 3; i < d.length; i += step) if (d[i] < 250) return true;
+  } catch {}
+  return false;
+}
+async function compressAlpha(img, W, H, maxW, maxH, limit){
+  for (let round = 0; round < 7; round++) {
+    const sc = Math.min(1, maxW / W, maxH / H);
+    const w = Math.max(1, Math.round(W * sc)), h = Math.max(1, Math.round(H * sc));
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    if (round === 0 && !canvasHasAlpha(c)) return null;
+    for (const q of [0.88, 0.78, 0.66]) { const out = c.toDataURL('image/webp', q); if (out.startsWith('data:image/webp') && out.length <= limit && validCover(out)) return out; }
+    const png = c.toDataURL('image/png'); if (png.length <= limit && validCover(png)) return png;
+    maxW *= 0.8; maxH *= 0.8;
+  }
+  return null;
+}
+async function compress(file, maxW0 = 540, maxH0 = 810, limit = 190000, keepAlpha = false){
+  const img = await loadImg(file);
+  const W = img.naturalWidth, H = img.naturalHeight;
+  if (!W || !H) throw new Error('empty');
+  if (keepAlpha) { const a = await compressAlpha(img, W, H, maxW0, maxH0, limit); if (a) return a; }
+  let maxW = maxW0, maxH = maxH0;
+  for (let round = 0; round < 4; round++) {
+    const sc = Math.min(1, maxW / W, maxH / H);
+    const w = Math.max(1, Math.round(W * sc)), h = Math.max(1, Math.round(H * sc));
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); g.drawImage(img, 0, 0, w, h);
+    for (const q of [0.82, 0.72, 0.62, 0.5]) { const out = c.toDataURL('image/jpeg', q); if (out.length <= limit && validCover(out)) return out; }
+    maxW *= 0.75; maxH *= 0.75;
+  }
+  throw new Error('too big');
+}
+async function takeFile(file){
+  if (!file) return;
+  const pick = $('#pick');
+  pick.dataset.busy = '1'; updatePickText(); $('#formErr').textContent = '';
+  try { S.cover = await compress(file); S.coverChanged = true; S.awaitCover = false; }
+  catch { $('#formErr').textContent = t('e_photo'); }
+  finally { pick.dataset.busy = '0'; showPreview(); }
+}
+const shelfChain = {};
+function shelfMeta(src, extra){
+  const keys = ['title', 'author', 'subject', 'grade', 'condition', 'hasNotes', 'type', 'price', 'wants', 'details', 'ig', 'status', 'createdAt', 'updatedAt', 'photoCount', 'coverV', 'lendDays', 'dueAt', 'confirmedAt', 'availableAt'];
+  const m = {};
+  keys.forEach(k => { const v = (extra && k in extra) ? extra[k] : src[k]; if (v !== undefined) m[k] = (typeof v === 'number' && !Number.isFinite(v)) ? null : v; });
+  return m;
+}
+function writeShelf(uid, mutate){
+  const run = async () => {
+    const books = JSON.parse(JSON.stringify(S.shelves.get(uid) || {}));
+    mutate(books);
+    await withRetry(() => db.doc('shelf/' + uid).set({ books, updatedAt: Date.now() }));
+    S.shelves.set(uid, books); rebuildBooks(); renderAll();
+  };
+  const p = (shelfChain[uid] || Promise.resolve()).then(run, run);
+  shelfChain[uid] = p.catch(() => {});
+  return p;
+}
+function rebuildBooks(){
+  const list = [], ids = new Set();
+  S.shelves.forEach((map, uid) => {
+    if (!map || typeof map !== 'object') return;
+    for (const [id, meta] of Object.entries(map)) { const b = clean(id, meta, uid, false); if (b && !ids.has(id)) { list.push(b); ids.add(id); } }
+  });
+  S.legacy.forEach(b => { if (!ids.has(b.id)) list.push(b); });
+  S.books = list;
+}
+async function migrateLegacy(){
+  if (S.migrating || !S.isOwner || !S.me || !S.legacy.length) return;
+  S.migrating = true;
+  try {
+    for (const b of S.legacy.slice()) {
+      const uid = b.ownerId || S.me;
+      let photos = [];
+      try { const snap = await db.collection('books/' + b.id + '/photos').get(); photos = snap.docs.filter(d => d.exists && ID_RE.test(d.id)).map(d => ({ id: d.id, data: d.data() || {} })); } catch {}
+      let kept = 0;
+      for (const ph of photos) {
+        const src = validCover(ph.data.src); if (!src) continue;
+        await withRetry(() => db.doc('shelf/' + uid + '/photos/' + ph.id).set({ bookId: b.id, src, order: Number(ph.data.order) || 0, createdAt: Number(ph.data.createdAt) || Date.now() }));
+        kept++;
+      }
+      const coverV = b.cover ? Date.now() : 0;
+      if (b.cover) await withRetry(() => db.doc('shelf/' + uid + '/covers/' + b.id).set({ src: b.cover, updatedAt: coverV }));
+      await writeShelf(uid, books => { books[b.id] = shelfMeta(b, { coverV, photoCount: kept, updatedAt: Date.now() }); });
+      for (const ph of photos) { try { await db.doc('books/' + b.id + '/photos/' + ph.id).delete(); } catch {} }
+      await withRetry(() => db.doc('books/' + b.id).delete());
+    }
+  } catch (e) { console.warn('Moving older listings paused:', e && e.code); }
+  finally { S.migrating = false; }
+}
+async function withRetry(fn){
+  try { return await fn(); }
+  catch (e) {
+    if (e && e.code === 'unavailable') { await new Promise(r => setTimeout(r, 400 + Math.random() * 700)); return await fn(); }
+    throw e;
+  }
+}
+function dbErrMsg(e){
+  const c = e && e.code;
+  if (c === 'not_granted') {
+    if (S.canWrite !== true) { S.readOnly = true; renderControls(); renderNotice(); }
+    return t('err_noperm');
+  }
+  if (c === 'quota_exceeded') return t('err_quota');
+  if (c === 'resource_exhausted') return t('err_busy');
+  return t('err_generic');
+}
+
+/* ---------- events ---------- */
+$$('.lang button').forEach(b => b.addEventListener('click', () => {
+  lang = b.dataset.lang; store.set('pcshssk.lang', lang); setTimeout(renderAcct, 0);
+  const ty = selectedRadio('type'), co = selectedRadio('cond');
+  applyLang(); if (ty) setRadio('type', ty); if (co) setRadio('cond', co); updateTypeFields();
+  disarmDelete(); renderAll(); renderPhotoGrid(); renderApparel();
+}));
+$('#q').addEventListener('input', e => { S.filter.q = e.target.value; renderShelf(); });
+$$('.chip').forEach(c => c.addEventListener('click', () => {
+  S.filter.type = c.dataset.type;
+  $$('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === c)));
+  renderShelf();
+}));
+$('#fSubject').addEventListener('change', e => { S.filter.subject = e.target.value; renderShelf(); });
+$('#fGrade').addEventListener('change', e => { S.filter.grade = e.target.value; renderShelf(); });
+$('#fSort').addEventListener('change', e => { S.filter.sort = e.target.value; renderShelf(); });
+$('#fMine').addEventListener('change', e => { S.filter.mine = e.target.checked; renderShelf(); });
+$('#fDone').addEventListener('change', e => { S.filter.done = e.target.checked; renderShelf(); });
+function clearFilters(){
+  Object.assign(S.filter, { q: '', type: 'all', subject: '', grade: '', mine: false });
+  $('#q').value = ''; $('#fSubject').value = ''; $('#fGrade').value = ''; $('#fMine').checked = false;
+  $$('.chip').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.type === 'all')));
+  renderShelf();
+}
+$('#clearBtn').addEventListener('click', clearFilters);
+$('#noticeDismiss').addEventListener('click', () => { store.set('pcshssk.ownerTip', '1'); renderNotice(); });
+window.addEventListener('hashchange', route);
+
+$$('dialog').forEach(d => {
+  d.addEventListener('click', e => { if (e.target === d) d.close(); });
+  $$('[data-close]', d).forEach(b => b.addEventListener('click', () => d.close()));
+});
+$('#detailDlg').addEventListener('close', () => {
+  disarmDelete(); stopPhotos(); S.detailIdx = 0;
+  if ($('#viewerDlg').open) $('#viewerDlg').close();
+  if (/^#book-/.test(location.hash)) location.hash = 'browse';
+});
+
+$('#dCopy').addEventListener('click', async e => {
+  const btn = e.currentTarget;
+  try { await navigator.clipboard.writeText($('#dHello').textContent); btn.textContent = t('copied'); setTimeout(() => { btn.textContent = t('copy'); }, 1600); }
+  catch { const r = document.createRange(); r.selectNodeContents($('#dHello')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+});
+$('#dCopyIg').addEventListener('click', async e => {
+  const b = S.books.find(x => x.id === S.detailId); if (!b || !b.ig) return;
+  const btn = e.currentTarget;
+  try { await navigator.clipboard.writeText('@' + b.ig); btn.textContent = t('copied'); setTimeout(() => { btn.textContent = t('copy_ig', { ig: b.ig }); }, 1600); }
+  catch { toast('@' + b.ig); }
+});
+$$('#dManage [data-status]').forEach(btn => btn.addEventListener('click', async () => {
+  const id = S.detailId, st = btn.dataset.status;
+  const b = S.books.find(x => x.id === id);
+  if (!b || !db || b.status === st) return;
+  btn.disabled = true;
+  try { await setStatus(b, st); }
+  catch (e) { toast(dbErrMsg(e)); }
+  finally { btn.disabled = false; }
+}));
+async function setStatus(b, st){
+  const id = b.id, now = Date.now();
+  let back = false;
+  await writeShelf(b.ownerId, books => {
+    const x = books[id]; if (!x) return;
+    back = st === 'available' && x.status !== 'available';
+    x.status = st; x.updatedAt = now;
+    x.dueAt = st === 'lent' ? now + (b.lendDays || 14) * DAY : null;
+    if (st === 'available') { x.confirmedAt = now; if (back) x.availableAt = now; }
+  });
+  const n = (S.interestByBook.get(id) || []).filter(x => x.uid !== b.ownerId).length;
+  toast(back && n ? t('toast_marked_avail', { n }) : t('status_set'));
+}
+async function confirmAvail(b){
+  const now = Date.now();
+  await writeShelf(b.ownerId, books => { const x = books[b.id]; if (x) x.confirmedAt = now; });
+  toast(t('toast_confirmed'));
+}
+$('#dConfirm').addEventListener('click', async e => {
+  const b = S.books.find(x => x.id === S.detailId); if (!b || !db) return;
+  const btn = e.currentTarget; btn.disabled = true;
+  try { await confirmAvail(b); } catch (err) { toast(dbErrMsg(err)); } finally { btn.disabled = false; }
+});
+$('#dEdit').addEventListener('click', () => { const b = S.books.find(x => x.id === S.detailId); if (b) openForm(b); });
+$('#dDelete').addEventListener('click', async e => {
+  const btn = e.currentTarget, id = S.detailId;
+  if (btn.dataset.armed !== '1') {
+    btn.dataset.armed = '1'; btn.textContent = t('delete_confirm');
+    clearTimeout(btn._t); btn._t = setTimeout(disarmDelete, 4000);
+    return;
+  }
+  clearTimeout(btn._t); btn.disabled = true;
+  const b = S.books.find(x => x.id === id);
+  if (!canManage(b) || !S.isOwner) { btn.disabled = false; disarmDelete(); return; }
+  const uid = b.ownerId;
+  try {
+    await writeShelf(uid, books => { delete books[id]; });
+    $('#detailDlg').close(); toast(t('deleted'));
+    imgCache.delete(id); covers.delete(id);
+    try { await db.doc('shelf/' + uid + '/covers/' + id).delete(); } catch {}
+    try { const snap = await photosQuery(b).get(); for (const pd of snap.docs) { if (ID_RE.test(pd.id)) await db.doc('shelf/' + uid + '/photos/' + pd.id).delete(); } } catch {}
+    for (const m of (S.msgsByBook.get(id) || [])) { try { await db.doc('msgs/' + m.id).delete(); } catch {} }
+  }
+  catch (err) { toast(dbErrMsg(err)); }
+  finally { btn.disabled = false; disarmDelete(); }
+});
+
+$('#fmCover').addEventListener('change', e => { const f = e.target.files && e.target.files[0]; e.target.value = ''; takeFile(f); });
+const pick = $('#pick');
+['dragenter', 'dragover'].forEach(ev => pick.addEventListener(ev, e => { e.preventDefault(); pick.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(ev => pick.addEventListener(ev, e => { e.preventDefault(); pick.classList.remove('drag'); }));
+pick.addEventListener('drop', e => { const f = e.dataTransfer && e.dataTransfer.files[0]; takeFile(f); });
+$('#typeSeg').addEventListener('change', updateTypeFields);
+
+$('#bookForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (S.busy) return;
+  const d = readForm();
+  const bad = validate(d);
+  if (bad) { $('#formErr').textContent = t(bad[0]); const f = $(bad[1]); if (f) { f.scrollIntoView({ block: 'center', behavior: 'smooth' }); if (f.focus) f.focus({ preventScroll: true }); } return; }
+  if (!db) { $('#formErr').textContent = t('loading'); return; }
+  if (S.photosLoading || S.photoBusy) { $('#formErr').textContent = t('photos_wait'); return; }
+  S.busy = true;
+  const btn = $('#submitBtn'); btn.disabled = true; btn.textContent = t('saving'); $('#formErr').textContent = '';
+  const editing = S.editing;
+  if (!editing && !S.pendingId) S.pendingId = newId();
+  const bookId = editing || S.pendingId;
+  const prev = editing ? S.books.find(x => x.id === editing) : null;
+  if (editing && !canManage(prev)) { S.busy = false; btn.disabled = false; btn.textContent = t('submit_edit'); $('#formErr').textContent = t('err_noperm'); return; }
+  const uid = prev ? prev.ownerId : S.me;
+  try {
+    for (const p of S.photos.filter(x => x.removed && !x.isNew)) {
+      await withRetry(() => db.doc('shelf/' + uid + '/photos/' + p.id).delete());
+    }
+    S.photos = S.photos.filter(x => !x.removed);
+    const fresh = S.photos.filter(x => x.isNew);
+    let i = 0;
+    for (const p of S.photos) {
+      if (!p.isNew) continue;
+      i++; btn.textContent = t('saving_photos', { i, n: fresh.length });
+      const order = S.photos.indexOf(p);
+      await withRetry(() => db.doc('shelf/' + uid + '/photos/' + p.id).set({ bookId, src: p.src, order, createdAt: Date.now() }));
+      p.isNew = false;
+    }
+    btn.textContent = t('saving');
+    const photoCount = Math.min(MAX_PHOTOS, (S.photosLoadFailed && prev) ? prev.photoCount + fresh.length : S.photos.length);
+    const now = Date.now();
+    let coverV = prev ? prev.coverV : 0;
+    if (S.coverChanged || !coverV) {
+      coverV = now;
+      await withRetry(() => db.doc('shelf/' + uid + '/covers/' + bookId).set({ src: d.cover, updatedAt: coverV }));
+      covers.set(bookId, { v: coverV, src: d.cover });
+    }
+    let status = prev ? prev.status : 'available';
+    if (d.type !== 'lend' && status === 'lent') status = 'available';
+    const meta = shelfMeta(d, { photoCount, coverV, status, dueAt: status === 'lent' && prev ? (prev.dueAt || null) : null, confirmedAt: status === 'available' ? now : ((prev && prev.confirmedAt) || null), availableAt: status === 'available' && prev && prev.status !== 'available' ? now : ((prev && prev.availableAt) || null), createdAt: (prev && prev.createdAt) || now, updatedAt: now });
+    await writeShelf(uid, books => { books[bookId] = meta; });
+    if (d.ig && uid === S.me) db.doc('profiles/' + uid).set({ name: '@' + d.ig, updatedAt: Date.now() }).catch(() => {});
+    S.pendingId = null;
+    store.set('pcshssk.ig', d.ig);
+    $('#formDlg').close();
+    toast(t(editing ? 'saved' : 'posted'));
+  } catch (err) {
+    $('#formErr').textContent = dbErrMsg(err);
+  } finally {
+    S.busy = false; btn.disabled = false; btn.textContent = t(S.editing ? 'submit_edit' : 'submit_new');
+  }
+});
+
+$('#settingsBtn').addEventListener('click', () => { $('#setIg').value = S.adminIg; $('#setErr').textContent = ''; $('#settingsDlg').showModal(); });
+$('#settingsForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const raw = $('#setIg').value.trim();
+  const ig = cleanIg(raw);
+  if (raw && !ig) { $('#setErr').textContent = t('e_ig'); return; }
+  const btn = $('#setSave'); btn.disabled = true;
+  try { await withRetry(() => db.doc('config/site').set({ adminIg: ig, updatedAt: Date.now() })); $('#settingsDlg').close(); toast(t('settings_saved')); }
+  catch (err) { $('#setErr').textContent = dbErrMsg(err); }
+  finally { btn.disabled = false; }
+});
+
+$('#pgrid').addEventListener('change', e => {
+  const inp = e.target;
+  if (inp && inp.id === 'fmPhotos') { const files = Array.from(inp.files || []); inp.value = ''; takePhotos(files); }
+});
+$('#dCover').addEventListener('click', () => { const b = curBook(); if (b && $('#dCover').classList.contains('zoom')) openViewer(toViewIdx(b, S.detailIdx)); });
+$('#dCover').addEventListener('keydown', e => {
+  const b = curBook();
+  if (b && (e.key === 'Enter' || e.key === ' ') && $('#dCover').classList.contains('zoom')) { e.preventDefault(); openViewer(toViewIdx(b, S.detailIdx)); }
+});
+$('#vPrev').addEventListener('click', () => stepView(-1));
+$('#vNext').addEventListener('click', () => stepView(1));
+$('#vStage').addEventListener('click', e => { if (e.target === e.currentTarget) $('#viewerDlg').close(); });
+$('#viewerDlg').addEventListener('keydown', e => { if (e.key === 'ArrowLeft') stepView(-1); else if (e.key === 'ArrowRight') stepView(1); });
+$('#viewerDlg').addEventListener('close', () => {
+  if (S.viewerList) { S.viewerList = null; return; }
+  const b = curBook();
+  if (b && $('#detailDlg').open) { S.detailIdx = fromViewIdx(b, S.viewIdx, S.detailIdx); renderGallery(b); }
+});
+let touchX = null;
+$('#viewerDlg').addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+$('#viewerDlg').addEventListener('touchend', e => {
+  if (touchX == null) return;
+  const dx = e.changedTouches[0].clientX - touchX; touchX = null;
+  if (Math.abs(dx) > 45) stepView(dx < 0 ? 1 : -1);
+});
+
+$('#dLike').addEventListener('click', () => toggleInterest(S.detailId));
+$('#shelf').addEventListener('click', e => { const avb = e.target.closest('button[data-av]'); if (avb) { e.preventDefault(); const card = avb.closest('.book[data-id]'); const b = card && S.books.find(x => x.id === card.dataset.id); if (!b || !db || avb.disabled) return; avb.disabled = true; (async () => { try { if (avb.dataset.av === 'confirm') await confirmAvail(b); else await setStatus(b, avb.dataset.av); } catch (err) { toast(dbErrMsg(err)); avb.disabled = false; } })(); return; } const btn = e.target.closest('button.like'); if (btn) { e.preventDefault(); toggleInterest(btn.dataset.like); } });
+$('#shelf').addEventListener('animationend', e => { if (e.target.closest && e.target.closest('.like')) e.target.closest('.like').classList.remove('pop'); });
+$('#dLike').addEventListener('animationend', () => $('#dLike').classList.remove('pop'));
+$('#dGoChat').addEventListener('click', () => {
+  const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $('#dChat').scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+  if (writeAllowed()) setTimeout(() => $('#chatInput').focus({ preventScroll: true }), smooth ? 350 : 0);
+});
+$('#chatForm').addEventListener('submit', e => { e.preventDefault(); sendMsg(); });
+$('#chatInput').addEventListener('input', autoGrow);
+$('#chatInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && matchMedia('(pointer: fine)').matches) { e.preventDefault(); sendMsg(); }
+});
+
+$('#apAddBtn').addEventListener('click', () => openApForm(null));
+function setApEdit(on){ S.apEdit = !!on; store.set('pcshssk.apEdit', S.apEdit ? '1' : '0'); renderApparel(); }
+$('#apEditToggle').addEventListener('click', () => setApEdit(!S.apEdit));
+$('#apEditDone').addEventListener('click', () => setApEdit(false));
+bnSetup('bnBooks'); bnSetup('bnStore');
+$('#viewApparel').addEventListener('click', e => {
+  const c = e.target.closest('[data-ap-cat]');
+  const q = e.target.closest('[data-ap-quick]');
+  if (!c && !q) return;
+  S.apFilter = c ? { cat: c.dataset.apCat, quick: '' } : { cat: '', quick: S.apFilter.quick === q.dataset.apQuick ? '' : q.dataset.apQuick };
+  renderApparel();
+  if (!(c && c.classList.contains('ap-catlink'))) scrollToEl($('#apListHead'));
+});
+$('#apClear').addEventListener('click', () => { S.apFilter = { cat: '', quick: '' }; renderApparel(); });
+$('#apPoster').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  const pk = $('#apPick'); pk.dataset.busy = '1'; showApPreview(); $('#apErr').textContent = '';
+  try { S.apPoster = await compress(f, 1080, 1350, 230000, true); }
+  catch { $('#apErr').textContent = t('e_photo'); }
+  finally { pk.dataset.busy = '0'; showApPreview(); }
+});
+$('#apGrid').addEventListener('click', async e => {
+  const v = e.target.closest('[data-ap-view]');
+  if (v) { const a = S.apparel.find(x => x.id === v.dataset.apView); if (a && a.cover) { S.viewerList = [a.cover]; S.viewIdx = 0; showView(); if (!$('#viewerDlg').open) $('#viewerDlg').showModal(); } return; }
+  const ed = e.target.closest('[data-ap-edit]');
+  if (ed) { openApForm(S.apparel.find(x => x.id === ed.dataset.apEdit)); return; }
+  const del = e.target.closest('[data-ap-del]');
+  if (del) {
+    if (del.dataset.armed !== '1') { del.dataset.armed = '1'; del.textContent = t('delete_confirm'); setTimeout(() => { if (del.isConnected) { del.dataset.armed = '0'; del.textContent = t('delete'); } }, 4000); return; }
+    del.disabled = true;
+    try { await withRetry(() => db.doc('apparel/' + del.dataset.apDel).delete()); toast(t('ap_deleted')); }
+    catch (err) { toast(dbErrMsg(err)); del.disabled = false; }
+  }
+});
+$('#apForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (S.apBusy || !db) return;
+  const err = $('#apErr');
+  const name = $('#apName').value.trim().slice(0, 80);
+  const rawPrice = $('#apPrice').value.trim();
+  const price = rawPrice === '' ? null : Number(rawPrice);
+  const formUrl = cleanFormUrl($('#apUrl').value);
+  const opensAt = new Date($('#apOpens').value).getTime(), closesAt = new Date($('#apCloses').value).getTime();
+  if (!S.apPoster) { err.textContent = t('e_ap_poster'); return; }
+  if (!name) { err.textContent = t('e_ap_name'); $('#apName').focus(); return; }
+  if (price !== null && (!Number.isInteger(price) || price < 0 || price > 99999)) { err.textContent = t('e_ap_price'); $('#apPrice').focus(); return; }
+  if (!formUrl) { err.textContent = t('e_ap_form'); $('#apUrl').focus(); return; }
+  if (!Number.isFinite(opensAt) || !Number.isFinite(closesAt) || closesAt <= opensAt) { err.textContent = t('e_ap_time'); $('#apOpens').focus(); return; }
+  const prev = S.apEditing ? S.apparel.find(x => x.id === S.apEditing) : null;
+  const id = S.apEditing || ('a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
+  const now = Date.now();
+  const category = AP_CATS.includes($('#apCatSel').value) ? $('#apCatSel').value : 'other';
+  const data = { name, category, price, sizes: $('#apSizes').value.trim().slice(0, 60), formUrl, opensAt, closesAt, details: $('#apDetails').value.trim().slice(0, 600), cover: S.apPoster, createdAt: (prev && prev.createdAt) || now, updatedAt: now };
+  S.apBusy = true; const btn = $('#apSave'); btn.disabled = true; err.textContent = '';
+  try { await withRetry(() => db.doc('apparel/' + id).set(data)); $('#apDlg').close(); toast(t('ap_saved')); }
+  catch (e2) { err.textContent = dbErrMsg(e2); }
+  finally { S.apBusy = false; btn.disabled = false; }
+});
+setInterval(tickApparel, 1000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) tickApparel(); });
+
+/* ---------- account ---------- */
+function renderAcct(){
+  const A = window.PCSHSSK_AUTH, btn = $('#acctBtn');
+  if (!A || A.state === 'loading' || window.PCSHSSK_FB_STATE !== 'ok') { btn.hidden = true; return; }
+  btn.hidden = false;
+  const loggedIn = !A.isAnon;
+  btn.classList.toggle('admin', loggedIn && !!A.isAdmin);
+  btn.textContent = loggedIn ? (A.isAdmin ? '✓ ' + t('acct_admin_short') : A.name) : t('acct_login');
+}
+function fillAcct(){
+  const A = window.PCSHSSK_AUTH || {}, loggedIn = !A.isAnon && A.state === 'ok';
+  $('#acctErr').textContent = '';
+  $('#loginForm').hidden = loggedIn;
+  $('#acctInfo').hidden = !loggedIn;
+  $('#acctTitle').textContent = loggedIn ? (A.isAdmin ? t('acct_admin_short') : A.name) : t('acct_title');
+  if (loggedIn) {
+    $('#acctStatus').textContent = t('acct_signed', { name: A.name || '' });
+    $('#acctRole').textContent = A.isAdmin ? t('acct_admin') : t('acct_notadmin');
+    $('#acctId').textContent = A.uid || '';
+    $('#acctIdRow').hidden = !!A.isAdmin;
+  } else { $('#loginPass').value = ''; }
+}
+$('#acctBtn').addEventListener('click', () => { fillAcct(); $('#acctDlg').showModal(); if (!$('#loginForm').hidden) setTimeout(() => $('#loginUser').focus(), 50); });
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const A = window.PCSHSSK_AUTH; if (!A) return;
+  const u = $('#loginUser').value.trim(), pw = $('#loginPass').value;
+  if (!u || !pw) { $('#acctErr').textContent = t('acct_err_bad'); return; }
+  const btn = $('#loginBtn'); btn.disabled = true; $('#acctErr').textContent = '';
+  try { await A.signIn(u, pw); }
+  catch (err) {
+    const c = (err && err.code) || '';
+    $('#acctErr').textContent = /invalid-credential|wrong-password|user-not-found|invalid-email|invalid-login/.test(c) ? t('acct_err_bad')
+      : /too-many-requests/.test(c) ? t('acct_err_many') : /operation-not-allowed/.test(c) ? t('acct_err_off') : t('acct_err');
+    $('#loginPass').value = '';
+  } finally { btn.disabled = false; }
+});
+$('#acctOut').addEventListener('click', async () => { const A = window.PCSHSSK_AUTH; if (A) { try { await A.signOut(); } catch { $('#acctErr').textContent = t('acct_err'); } } });
+$('#acctCopy').addEventListener('click', async () => {
+  const id = (window.PCSHSSK_AUTH || {}).uid || '';
+  try { await navigator.clipboard.writeText(id); toast(t('acct_copied')); }
+  catch { const r = document.createRange(); r.selectNodeContents($('#acctId')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+});
+
+/* ---------- boot ---------- */
+function waitForClaude(ms){
+  return new Promise(res => {
+    const t0 = Date.now();
+    (function poll(){
+      if (window.claude && typeof window.claude.use === 'function') return res(window.claude);
+      if (Date.now() - t0 > ms) return res(null);
+      setTimeout(poll, 150);
+    })();
+  });
+}
+async function boot(){
+  applyLang(); renderAll(); route();
+  const claude = await waitForClaude(3000);
+  if (!claude) { S.dbState = 'off'; renderAll(); renderApparel(); return; }
+  let dbNs = null, user = null;
+  try { [dbNs, user] = await Promise.all([claude.use('db'), claude.use('user')]); } catch {}
+  if (!dbNs) { S.dbState = 'off'; renderAll(); renderApparel(); renderAcct(); return; }
+  db = dbNs;
+  S.seen = loadSeen();
+  S.apEdit = store.get('pcshssk.apEdit') === '1';
+  if (user) {
+    S.userCap = user;
+    try { S.me = await user.id(); } catch {}
+    try { S.isOwner = !!(await user.isOwner()); } catch {}
+    try { const c = await user.can('data.write'); S.canWrite = (c === null || c === undefined) ? null : !!c; } catch { S.canWrite = null; }
+  }
+  S.dbState = 'ready';
+  renderAcct();
+  const slowTimer = setTimeout(() => { if (!S.confirmed) { S.slow = true; renderAll(); } }, 10000);
+  const settle = () => {
+    const before = S.loaded ? new Map(S.books.map(b => [b.id, b.status])) : null;
+    rebuildBooks();
+    if (before && S.me) S.books.forEach(b => { const p = before.get(b.id); if (p && p !== 'available' && b.status === 'available' && b.ownerId !== S.me && S.myInterest[b.id]) toast(t('toast_avail_back', { title: b.title })); });
+    const first = !S.loaded && S.gotShelf && S.gotLegacy;
+    if (first) S.loaded = true;
+    renderAll();
+    if (first) route();
+    if (S.gotShelf && S.gotLegacy) migrateLegacy();
+  };
+  db.collection('shelf').limit(1000).onSnapshot(snap => {
+    const m = new Map();
+    snap.docs.forEach(d => { if (!d.exists) return; const data = d.data() || {}; m.set(d.id, data.books && typeof data.books === 'object' ? data.books : {}); });
+    S.shelves = m; S.gotShelf = true;
+    if (!snap.metadata.fromCache) { S.confirmed = true; S.slow = false; clearTimeout(slowTimer); }
+    settle();
+  }, err => {
+    clearTimeout(slowTimer);
+    S.dbError = (err && err.code) || 'unavailable'; S.loaded = true; renderAll();
+  });
+  S.gotLegacy = true;
+  db.collection('msgs').orderBy('createdAt', 'desc').limit(1000).onSnapshot(snap => {
+    S.msgs = snap.docs.filter(d => d.exists).map(d => cleanMsg(d.id, d.data())).filter(Boolean);
+    indexMsgs(); renderSocialAll();
+  }, () => {});
+  db.collection('interest').limit(1000).onSnapshot(snap => {
+    indexInterest(snap.docs.filter(d => d.exists).map(d => ({ id: d.id, data: d.data() })));
+    renderSocialAll();
+  }, () => {});
+  db.collection('apparel').limit(100).onSnapshot(snap => {
+    S.apparel = snap.docs.filter(d => d.exists).map(d => cleanAp(d.id, d.data())).filter(Boolean);
+    S.apLoaded = true; renderApparel();
+  }, () => { S.apLoaded = true; renderApparel(); });
+  db.doc('config/site').onSnapshot(s => {
+    const d = s.exists ? s.data() : null;
+    S.adminIg = d ? cleanIg(d.adminIg) : '';
+    renderNotice();
+  }, () => {});
+  renderAll(); renderApparel();
+}
+boot();
+})();
+</script>
+</body>
+</html>
